@@ -35,7 +35,7 @@ SYSTEM_PROMPT             = os.getenv("SYSTEM_PROMPT", (
     "กระชับ และเป็นประโยชน์ ห้ามใช้ Markdown เช่น ** หรือ ### ตอบเป็นข้อความธรรมดาเท่านั้น "
     "หากไม่แน่ใจให้บอกตรง ๆ"
 ))
-PDF_MAX_CHARS = int(os.getenv("PDF_MAX_CHARS", "6000"))
+PDF_MAX_CHARS = int(os.getenv("PDF_MAX_CHARS", "20000"))
 
 if not LINE_CHANNEL_ACCESS_TOKEN or not LINE_CHANNEL_SECRET:
     raise ValueError("กรุณาตั้งค่า LINE_CHANNEL_ACCESS_TOKEN และ LINE_CHANNEL_SECRET ใน .env")

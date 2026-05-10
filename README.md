@@ -142,7 +142,7 @@ python webchat.py
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | URL ของ Ollama |
 | `OLLAMA_MODEL` | `gemma3:9b` | ชื่อ model จาก `ollama list` |
 | `SYSTEM_PROMPT` | ดู .env.example | ปรับบุคลิก AI |
-| `PDF_MAX_CHARS` | `6000` | ขนาดสูงสุดของ PDF ที่อ่าน |
+| `PDF_MAX_CHARS` | `20000` | ขนาดสูงสุดของ PDF ที่อ่าน |
 | `WEB_PORT` | `8001` | Port ของ Web Chat |
 
 ---

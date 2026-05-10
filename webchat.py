@@ -22,7 +22,7 @@ SYSTEM_PROMPT   = os.getenv("SYSTEM_PROMPT", (
     "กระชับ และเป็นประโยชน์ หากไม่แน่ใจให้บอกตรง ๆ "
     "เมื่อเขียนโค้ดให้ใส่ภาษาของโค้ดหลัง ``` เสมอ เช่น ```python"
 ))
-PDF_MAX_CHARS = int(os.getenv("PDF_MAX_CHARS", "6000"))
+PDF_MAX_CHARS = int(os.getenv("PDF_MAX_CHARS", "20000"))
 WEB_PORT      = int(os.getenv("WEB_PORT", "8001"))
 
 app = FastAPI(title="Gemma Web Chat v2")
