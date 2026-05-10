@@ -4,7 +4,6 @@ database.py — SQLite history manager
 """
 import sqlite3
 import threading
-import json
 from datetime import datetime
 from typing import List, Dict, Optional
 
@@ -30,9 +29,9 @@ class Database:
                     id          TEXT PRIMARY KEY,
                     source      TEXT NOT NULL DEFAULT 'webchat',
                     created_at  TEXT NOT NULL,
-                    updated_at  TEXT NOT NULL
+                    updated_at  TEXT NOT NULL,
+                    title       TEXT
                 );
-
                 CREATE TABLE IF NOT EXISTS messages (
                     id          INTEGER PRIMARY KEY AUTOINCREMENT,
                     session_id  TEXT    NOT NULL,
@@ -41,13 +40,21 @@ class Database:
                     created_at  TEXT    NOT NULL,
                     FOREIGN KEY (session_id) REFERENCES sessions(id)
                 );
-
                 CREATE INDEX IF NOT EXISTS idx_messages_session
                     ON messages(session_id, id);
             """)
-            conn.commit()
+            # migrate: add title column if missing
+            try:
+                conn.execute("ALTER TABLE sessions ADD COLUMN title TEXT")
+                conn.commit()
+            except Exception:
+                pass
 
-    # ── Sessions ───────────────────────────────────────────────────────────
+    def _has_col(self, col: str) -> bool:
+        conn = self._conn()
+        cols = [r[1] for r in conn.execute("PRAGMA table_info(sessions)").fetchall()]
+        return col in cols
+
     def ensure_session(self, session_id: str, source: str = "webchat"):
         now  = datetime.now().isoformat()
         conn = self._conn()
@@ -58,7 +65,11 @@ class Database:
         """, (session_id, source, now, now))
         conn.commit()
 
-    # ── Messages ───────────────────────────────────────────────────────────
+    def rename_session(self, session_id: str, title: str):
+        conn = self._conn()
+        conn.execute("UPDATE sessions SET title = ? WHERE id = ?", (title, session_id))
+        conn.commit()
+
     def add_message(self, session_id: str, role: str, content: str, source: str = "webchat"):
         self.ensure_session(session_id, source)
         now  = datetime.now().isoformat()
@@ -67,10 +78,7 @@ class Database:
             "INSERT INTO messages (session_id, role, content, created_at) VALUES (?, ?, ?, ?)",
             (session_id, role, content, now)
         )
-        conn.execute(
-            "UPDATE sessions SET updated_at = ? WHERE id = ?",
-            (now, session_id)
-        )
+        conn.execute("UPDATE sessions SET updated_at = ? WHERE id = ?", (now, session_id))
         conn.commit()
 
     def get_messages(self, session_id: str, limit: int = 20) -> List[Dict]:
@@ -89,11 +97,16 @@ class Database:
         conn.execute("DELETE FROM messages WHERE session_id = ?", (session_id,))
         conn.commit()
 
-    # ── History view ───────────────────────────────────────────────────────
-    def get_sessions(self, source: Optional[str] = None, limit: int = 50) -> List[Dict]:
+    def delete_session(self, session_id: str):
+        conn = self._conn()
+        conn.execute("DELETE FROM messages WHERE session_id = ?", (session_id,))
+        conn.execute("DELETE FROM sessions WHERE id = ?", (session_id,))
+        conn.commit()
+
+    def get_sessions(self, source: Optional[str] = None, limit: int = 100) -> List[Dict]:
         conn  = self._conn()
         query = """
-            SELECT s.id, s.source, s.created_at, s.updated_at,
+            SELECT s.id, s.source, s.created_at, s.updated_at, s.title,
                    COUNT(m.id) as msg_count,
                    MAX(CASE WHEN m.role='user' THEN m.content END) as last_user_msg
             FROM sessions s
@@ -116,7 +129,7 @@ class Database:
         """, (session_id,)).fetchall()
         return [dict(r) for r in rows]
 
-    def search_messages(self, keyword: str, limit: int = 20) -> List[Dict]:
+    def search_messages(self, keyword: str, limit: int = 30) -> List[Dict]:
         conn = self._conn()
         rows = conn.execute("""
             SELECT m.session_id, m.role, m.content, m.created_at, s.source
