@@ -86,7 +86,7 @@ def extract_pdf_text(pdf_bytes: bytes, max_chars: int = 6000) -> str:
 
 # ── Ollama Chat ───────────────────────────────────────────────────────────
 async def chat_with_ollama(user_id: str, user_message: str) -> str:
-    conversation_manager.add_message(user_id, "user", user_message)
+    conversation_manager.add_message(user_id, "user", user_message, "line")
     messages = conversation_manager.get_messages(user_id)
 
     payload = {
@@ -106,7 +106,7 @@ async def chat_with_ollama(user_id: str, user_message: str) -> str:
             response.raise_for_status()
             reply_content = response.json()["message"]["content"]
 
-        conversation_manager.add_message(user_id, "assistant", reply_content)
+        conversation_manager.add_message(user_id, "assistant", reply_content, "line")
         reply = reply_content.strip()
         return reply if reply else "⚠️ ขอโทษครับ ไม่สามารถสร้างคำตอบได้ กรุณาลองใหม่"
 
