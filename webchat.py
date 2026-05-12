@@ -1,6 +1,14 @@
+# -*- coding: utf-8 -*-
 import os
 import io
+import sys
 import httpx
+
+# Fix Windows encoding
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 import logging
 import base64
 from fastapi import FastAPI, UploadFile, File
@@ -784,18 +792,17 @@ async function send(){
 
 if __name__ == "__main__":
     import uvicorn, socket
+    import sys, io
+    # Fix Windows encoding
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
     try:
         s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         s.connect(("8.8.8.8",80))
         local_ip=s.getsockname()[0];s.close()
     except Exception:
         local_ip="localhost"
-    print(f"""
-╔══════════════════════════════════════════╗
-║         Gemma Web Chat  v6               ║
-╠══════════════════════════════════════════╣
-║  Chat:    http://localhost:{WEB_PORT}         ║
-║  Network: http://{local_ip}:{WEB_PORT}   ║
-╚══════════════════════════════════════════╝
-    """)
+    print(f"Gemma Web Chat v6")
+    print(f"  Chat:    http://localhost:{WEB_PORT}")
+    print(f"  Network: http://{local_ip}:{WEB_PORT}")
     uvicorn.run("webchat:app", host="0.0.0.0", port=WEB_PORT, reload=False)
