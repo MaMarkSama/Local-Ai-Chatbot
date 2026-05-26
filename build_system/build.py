@@ -12,7 +12,7 @@ from pathlib import Path
 BUILD_CONFIG = {
     # ── ข้อมูลแอป ──────────────────────────────────────────
     "app_name":    "GemmaAI_Setup",
-    "app_version": "1.0.0",
+    "app_version": "1.0.1",
     "app_author":  "MaMarkSama",
     "app_desc":    "Gemma AI Local Chatbot Installer",
 

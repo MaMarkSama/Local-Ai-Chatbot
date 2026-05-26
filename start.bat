@@ -7,33 +7,29 @@ echo       Gemma AI - Starting...
 echo  ==========================================
 echo.
 
+cd /d "%~dp0"
+
+:: Check Python
 where python >nul 2>&1
 if %errorlevel% neq 0 (
-    echo  [ERROR] Python not found. Please install Python first.
+    echo  [ERROR] Python not found.
     echo  Download: https://www.python.org/downloads/
     pause
     exit /b 1
 )
 
-cd /d "%~dp0"
-
-echo  Checking dependencies...
+:: Install deps if needed
 python -c "import fastapi, uvicorn, httpx, linebot, dotenv, pypdf, docx, openpyxl, multipart" >nul 2>&1
 if %errorlevel% neq 0 (
     echo  Installing dependencies...
-    pip install -r requirements.txt -q
-    echo  Done.
+    pip install -r requirements.txt -q --no-warn-script-location
 )
 
+:: Launch
 if exist "launcher.py" (
-    echo  Opening Gemma AI Launcher...
     python launcher.py
-) else if exist "run.py" (
-    echo  Starting server...
-    python run.py
-    pause
 ) else (
-    echo  [ERROR] launcher.py or run.py not found.
+    echo  [ERROR] launcher.py not found. Run install.bat first.
     pause
     exit /b 1
 )

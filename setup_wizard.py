@@ -459,10 +459,21 @@ class SetupWizard:
 
         btn_row = tk.Frame(self.content, bg=BG)
         btn_row.pack(fill="x", pady=(6, 0))
-        self.Btn(btn_row, "▶ ติดตั้ง Packages", self._install_deps, color="#166534")
+        self.btn_install_dep = self.Btn(
+            btn_row, "▶ ติดตั้ง Packages", self._install_deps, color="#166534")
         self.Btn(btn_row, "ข้าม (มีแล้ว)", self.go_next, color=SURFACE2, fg=MUTED)
 
     def _install_deps(self):
+        # ป้องกันกดซ้ำ — ใช้ปุ่ม state แทน flag
+        if self.btn_install_dep.cget("state") == "disabled":
+            return
+
+        # ล็อคปุ่มทันที
+        self.btn_install_dep.config(state="disabled", text="กำลังติดตั้ง...", bg=MUTED)
+        self.btn_next.config(state="disabled")
+        self.btn_back.config(state="disabled")
+        self.btn_skip.config(state="disabled")
+
         pkgs = [
             ("fastapi>=0.111.0",        "FastAPI"),
             ("uvicorn[standard]>=0.30.0","Uvicorn"),
@@ -474,24 +485,36 @@ class SetupWizard:
             ("openpyxl>=3.1.0",         "openpyxl"),
             ("python-multipart>=0.0.9", "multipart"),
         ]
+
         def run():
             all_ok = True
+            flags = {"creationflags": subprocess.CREATE_NO_WINDOW} if sys.platform=="win32" else {}
             for pkg, name in pkgs:
                 self.log(self.dep_box, f"ติดตั้ง {name}...", "m")
-                r = subprocess.run([sys.executable, "-m", "pip", "install", pkg, "-q"],
-                                   capture_output=True, text=True)
+                r = subprocess.run(
+                    [sys.executable, "-m", "pip", "install", pkg, "-q",
+                     "--no-warn-script-location"],
+                    capture_output=True, text=True, **flags
+                )
                 if r.returncode == 0:
                     self.log(self.dep_box, f"✓ {name}", "g")
                 else:
-                    self.log(self.dep_box, f"✗ {name}: {r.stderr[:60]}", "r")
+                    self.log(self.dep_box, f"✗ {name}: {r.stderr[:80]}", "r")
                     all_ok = False
 
             if all_ok:
-                self.log(self.dep_box, "\n✓ ติดตั้งครบแล้ว!", "g")
+                self.log(self.dep_box, "\n✓ ติดตั้งครบแล้ว! กด ถัดไป เพื่อดำเนินการต่อ", "g")
             else:
                 self.log(self.dep_box, "\n⚠ บางตัวล้มเหลว ลองรัน pip install ด้วยตัวเอง", "y")
 
-            self.root.after(0, lambda: self.btn_next.config(state="normal"))
+            def unlock():
+                self.btn_next.config(state="normal")
+                self.btn_back.config(state="normal")
+                self.btn_skip.config(state="normal")
+                self.btn_install_dep.config(
+                    state="disabled", text="✓ ติดตั้งแล้ว", bg="#166534")
+            self.root.after(0, unlock)
+
         threading.Thread(target=run, daemon=True).start()
 
     # ── Step 4: Ollama & Pull Model ───────────────────────────────────────
@@ -499,7 +522,8 @@ class SetupWizard:
         self.H1("ติดตั้ง Ollama และ Pull Model")
 
         # Check ollama
-        r = subprocess.run(["ollama", "--version"], capture_output=True, text=True)
+        _flags = {"creationflags": subprocess.CREATE_NO_WINDOW} if sys.platform=="win32" else {}
+        r = subprocess.run(["ollama", "--version"], capture_output=True, text=True, **_flags)
         ollama_ok = r.returncode == 0
 
         status = self.Card()
@@ -554,7 +578,8 @@ class SetupWizard:
             self.btn_next.config(state="disabled")
 
     def _recheck_ollama(self):
-        r = subprocess.run(["ollama", "--version"], capture_output=True, text=True)
+        flags = {"creationflags": subprocess.CREATE_NO_WINDOW} if sys.platform=="win32" else {}
+        r = subprocess.run(["ollama", "--version"], capture_output=True, text=True, **flags)
         if r.returncode == 0:
             messagebox.showinfo("พบ Ollama", f"✓ Ollama พร้อมใช้งาน\n{r.stdout.strip()}")
             self.show_step(self.step)
@@ -567,10 +592,14 @@ class SetupWizard:
         self.btn_next.config(state="disabled")
 
         def run():
+            kwargs = {}
+            if sys.platform == "win32":
+                kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
             proc = subprocess.Popen(
                 ["ollama", "pull", model_id],
                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                text=True, encoding="utf-8", errors="replace"
+                text=True, encoding="utf-8", errors="replace",
+                **kwargs
             )
             for line in proc.stdout:
                 line = line.strip()
@@ -704,13 +733,17 @@ class SetupWizard:
         btn_row.pack(fill="x", pady=(12, 0))
         self.Btn(btn_row, "🚀 เปิด Launcher", self._launch, color=GREEN, fg="#000")
         self.Btn(btn_row, "📂 เปิดโฟลเดอร์",
-                lambda: os.startfile(self.install_dir.get()),
+                lambda: os.startfile(self.install_dir.get()) if os.path.exists(self.install_dir.get()) else None,
                 color=SURFACE2, fg=TEXT)
         self.Btn(btn_row, "🌐 เปิด Web Chat",
                 lambda: webbrowser.open(f"http://localhost:{port}"),
                 color=ACCENT)
 
-        self.btn_next.config(state="disabled")
+        # ปุ่ม Finish — ปิดโปรแกรม
+        self.btn_next.config(
+            text="✓ Finish", bg="#166534", fg="white", state="normal",
+            command=self.root.destroy
+        )
         self.btn_skip.config(state="disabled")
 
     def _copy_files_to_install_dir(self):
@@ -742,11 +775,7 @@ class SetupWizard:
         return copied, skipped
 
     def _launch(self):
-        # คัดลอกไฟล์ไปก่อน
         dest = self.install_dir.get()
-        if dest != BASE_DIR:
-            copied, skipped = self._copy_files_to_install_dir()
-
         launcher = os.path.join(dest, "launcher.py")
         if not os.path.exists(launcher):
             launcher = os.path.join(BASE_DIR, "launcher.py")
@@ -754,8 +783,14 @@ class SetupWizard:
         if os.path.exists(launcher):
             env = os.environ.copy()
             env["PYTHONIOENCODING"] = "utf-8"
-            subprocess.Popen([sys.executable, launcher],
-                           cwd=os.path.dirname(launcher), env=env)
+            flags = {}
+            if sys.platform == "win32":
+                flags["creationflags"] = subprocess.CREATE_NO_WINDOW
+            subprocess.Popen(
+                [sys.executable, launcher],
+                cwd=os.path.dirname(launcher),
+                env=env, **flags
+            )
         self.root.destroy()
 
     # ── Uninstall ──────────────────────────────────────────────────────────
