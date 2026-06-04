@@ -12,6 +12,15 @@ import time
 import webbrowser
 import socket
 from datetime import datetime
+# ── Robust Python Executable (Fixed for PyInstaller) ───────────────────────
+def get_python_exe():
+    if getattr(sys, 'frozen', False):
+        import shutil
+        return shutil.which('python') or shutil.which('python3') or shutil.which('py') or 'python'
+    return sys.executable
+
+PYTHON_EXE = get_python_exe()
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -235,7 +244,7 @@ class GemmaLauncher:
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
         self.proc_web = subprocess.Popen(
-            [sys.executable, os.path.join(BASE_DIR, "webchat.py")],
+            [PYTHON_EXE, os.path.join(BASE_DIR, "webchat.py")],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=BASE_DIR, env=env,
         )
         threading.Thread(target=self._stream, args=(self.proc_web, "WEB", "cyan"), daemon=True).start()
@@ -263,7 +272,7 @@ class GemmaLauncher:
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
         self.proc_line = subprocess.Popen(
-            [sys.executable, os.path.join(BASE_DIR, "main.py")],
+            [PYTHON_EXE, os.path.join(BASE_DIR, "main.py")],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=BASE_DIR, env=env,
         )
         threading.Thread(target=self._stream, args=(self.proc_line, "LINE", "blue"), daemon=True).start()

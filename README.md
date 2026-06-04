@@ -1,22 +1,29 @@
 # 🤖 Local-Ai-Chatbot
 
-Chatbot ขับเคลื่อนด้วย Local AI (Gemma 9B) ผ่าน Ollama  
-รองรับทั้ง **Line Bot** และ **Web Chat** แบบ Claude.ai
+Chatbot ขับเคลื่อนด้วย Local AI (Gemma / Llama / Qwen) ผ่าน Ollama
+รองรับทั้ง **Line Bot**, **Web Chat** พร้อมระบบ **User** และ **Memory**
 
 ---
 
 ## ✨ Features
 
+### 🌐 Web Chat
+- UI คล้าย Claude.ai — Sidebar สลับแชทได้
+- **Login / Register / Guest mode**
+- **Chat History** แยกต่อ user — User Isolation สมบูรณ์
+- Dark / Light Mode
+- ค้นหาแชท, เปลี่ยนชื่อ, ลบแชท
+
+### 🧠 Memory System
+- **Rolling Summary** — สรุปบทสนทนาเก่าอัตโนมัติเมื่อยาวเกิน
+- **Long-term Memory** — จำข้อมูลสำคัญของผู้ใช้ข้ามวัน
+- **Context Injection** — ใส่ memory เข้า prompt อัตโนมัติ
+- ดูและลบ memory ได้จาก UI
+
 ### 💬 Line Bot
 - ตอบข้อความสนทนาทั่วไป
 - อ่านและสรุปไฟล์ PDF อัตโนมัติ
 - จำประวัติการสนทนาต่อ user
-
-### 🌐 Web Chat
-- UI คล้าย Claude.ai มี Sidebar สลับแชทได้
-- Dark / Light Mode
-- ค้นหาแชท, เปลี่ยนชื่อ, ลบแชท
-- ประวัติการสนทนาเก็บใน SQLite ไม่หายแม้ restart
 
 ### 📁 ไฟล์ที่รองรับ
 | ประเภท | นามสกุล | ความสามารถ |
@@ -26,13 +33,14 @@ Chatbot ขับเคลื่อนด้วย Local AI (Gemma 9B) ผ่า
 | XML | .xml | แปลงเป็นข้อความอ่านง่าย |
 | Word | .docx, .doc | อ่านข้อความและตาราง |
 | Excel | .xlsx, .xls | อ่านทุก Sheet |
-| Text | .txt, .md, .json, .yaml ฯลฯ | อ่านตรงๆ |
+| Text | .txt, .md, .json ฯลฯ | อ่านตรงๆ |
 | รูปภาพ | .jpg, .png, .gif, .webp | วิเคราะห์ด้วย Vision AI |
 
 ### 🔧 อื่นๆ
 - Code Block พร้อมปุ่มคัดลอก + ดาวน์โหลดเป็นไฟล์
-- แยก session Line Bot vs Web Chat ไม่สับสน
-- รันบน WiFi/Hotspot เดียวกัน ไม่ต้องใช้เน็ตออกนอก (Web Chat)
+- GUI Launcher เปิด/ปิดแต่ละ service
+- Setup Wizard ติดตั้งครั้งแรกผ่าน GUI
+- Build เป็น .exe ได้ด้วย PyInstaller
 
 ---
 
@@ -47,16 +55,22 @@ Chatbot ขับเคลื่อนด้วย Local AI (Gemma 9B) ผ่า
 
 ## 🚀 ติดตั้ง
 
+### วิธีที่ 1 — Setup Wizard (แนะนำ)
+```
+ดับเบิ้ลคลิ๊ก install.bat
+```
+Wizard จะนำทางทุกขั้นตอนให้
+
+### วิธีที่ 2 — Manual
 ```bash
-# 1. Pull Model
+# Pull Model
 ollama pull gemma3:9b
 
-# 2. ติดตั้ง dependencies
+# ติดตั้ง dependencies
 pip install -r requirements.txt
 
-# 3. ตั้งค่า .env
+# ตั้งค่า .env
 cp .env.example .env
-# แก้ไข LINE_CHANNEL_ACCESS_TOKEN และ LINE_CHANNEL_SECRET
 ```
 
 ---
@@ -65,15 +79,26 @@ cp .env.example .env
 
 ```
 Local-Ai-Chatbot/
-├── main.py            # Line Bot (port 8000)
-├── webchat.py         # Web Chat (port 8001)
-├── file_processor.py  # อ่านและแปลงไฟล์ทุกประเภท
-├── conversation.py    # จัดการ chat history (RAM + SQLite)
-├── database.py        # SQLite manager
+├── main.py              # Line Bot (port 8000)
+├── webchat.py           # Web Chat API (port 8001)
+├── webchat_ui.html      # Web Chat UI (Login + Chat)
+├── file_processor.py    # อ่านไฟล์ทุกประเภท
+├── conversation.py      # จัดการ chat history
+├── database.py          # SQLite manager
+├── memory_manager.py    # Memory + Summary system
+├── user_manager.py      # Login/Register/Session
+├── auth_middleware.py   # FastAPI auth helpers
+├── launcher.py          # GUI Launcher
+├── run.py               # CLI launcher (รวม server)
+├── setup_wizard.py      # GUI Setup Wizard
 ├── requirements.txt
 ├── .env.example
-├── .gitignore
-└── README.md
+├── start.bat            # เปิด Launcher
+├── install.bat          # ติดตั้งครั้งแรก
+└── build_system/
+    ├── build.bat        # Build .exe installer
+    ├── build.py         # Build script
+    └── README_BUILD.md
 ```
 
 ---
@@ -87,14 +112,11 @@ python main.py
 # Terminal 2 — Web Chat
 python webchat.py
 
-# Terminal 3 — ngrok (Line Bot เท่านั้น)
+# Terminal 3 — ngrok
 ngrok.exe http --domain=your-domain.ngrok-free.app 8000
 ```
 
-**Web Chat เปิดบนมือถือ (WiFi/Hotspot เดียวกัน):**
-```
-http://192.168.x.x:8001
-```
+หรือดับเบิ้ลคลิ๊ก `start.bat` เพื่อเปิด GUI Launcher
 
 ---
 
@@ -106,26 +128,69 @@ http://192.168.x.x:8001
 | `LINE_CHANNEL_SECRET` | — | จาก Line Console |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | URL ของ Ollama |
 | `OLLAMA_MODEL` | `gemma3:9b` | Text model |
-| `OLLAMA_VISION_MODEL` | (ค่าเดียวกับ OLLAMA_MODEL) | Vision model สำหรับวิเคราะห์รูป |
+| `OLLAMA_VISION_MODEL` | (เดียวกับ MODEL) | Vision model |
 | `SYSTEM_PROMPT` | ดู .env.example | ปรับบุคลิก AI |
-| `PDF_MAX_CHARS` | `20000` | ขนาดสูงสุดของ PDF ต่อ chunk |
-| `WEB_PORT` | `8001` | Port ของ Web Chat |
+| `PDF_MAX_CHARS` | `20000` | ขนาดสูงสุด PDF |
+| `WEB_PORT` | `8001` | Port Web Chat |
+| `JWT_SECRET` | (สุ่มอัตโนมัติ) | Secret สำหรับ token |
+| `TOKEN_EXPIRE_DAYS` | `30` | อายุ session |
+| `NGROK_DOMAIN` | — | Static domain ของ ngrok |
 
 ---
 
-## ✅ Health Check
+## 🔐 User System
 
-```bash
-curl http://localhost:8000/health   # Line Bot
-curl http://localhost:8001/health   # Web Chat
-```
+| Feature | รายละเอียด |
+|---|---|
+| Register | สมัครด้วย username + password |
+| Login | Cookie-based session (30 วัน) |
+| Guest | ใช้งานได้โดยไม่ต้อง login |
+| User Isolation | แต่ละ user เห็นแชทของตัวเองเท่านั้น |
+| Change Password | เปลี่ยนรหัสผ่านได้จาก UI |
 
 ---
 
-## 📸 ตัวอย่างการใช้งาน
+## 🧠 Memory System
 
-<!-- ![Web Chat Demo](assets/webchat-demo.png) -->
-<!-- ![Line Bot Demo](assets/line-demo.png) -->
+| Feature | รายละเอียด |
+|---|---|
+| Rolling Summary | สรุปบทสนทนาเก่าอัตโนมัติเมื่อ > 20 คู่ |
+| Long-term Facts | จำข้อมูลสำคัญของ user ข้ามวัน |
+| Context Injection | ใส่ memory เข้า system prompt อัตโนมัติ |
+| Memory View | ดู memory ได้จากปุ่ม 🧠 ใน UI |
+| Clear Memory | ลบ memory ได้จาก user menu |
+
+---
+
+## 🔗 API Endpoints
+
+### Auth
+| Method | Path | หมายเหตุ |
+|---|---|---|
+| POST | `/api/auth/register` | สมัครสมาชิก |
+| POST | `/api/auth/login` | เข้าสู่ระบบ |
+| POST | `/api/auth/logout` | ออกจากระบบ |
+| GET  | `/api/auth/me` | ข้อมูล user ปัจจุบัน |
+
+### Chat
+| Method | Path | หมายเหตุ |
+|---|---|---|
+| POST | `/chat` | ส่งข้อความ |
+| POST | `/upload-file` | อัปโหลดไฟล์ |
+
+### Sessions
+| Method | Path | หมายเหตุ |
+|---|---|---|
+| GET    | `/api/sessions` | รายการแชท |
+| GET    | `/api/sessions/{id}` | ข้อความในแชท |
+| POST   | `/api/sessions/{id}/rename` | เปลี่ยนชื่อ |
+| DELETE | `/api/sessions/{id}` | ลบแชท |
+
+### Memory
+| Method | Path | หมายเหตุ |
+|---|---|---|
+| GET    | `/api/memory` | ดู memory |
+| DELETE | `/api/memory` | ลบ memory ทั้งหมด |
 
 ---
 
@@ -133,10 +198,10 @@ curl http://localhost:8001/health   # Web Chat
 
 - **FastAPI** — Web Framework
 - **Ollama** — Local AI Runtime
-- **Gemma 9B** — AI Model (Text + Vision)
-- **SQLite** — เก็บประวัติการสนทนา
+- **Gemma / Llama / Qwen** — AI Models
+- **SQLite** — Database (chat, users, memory)
 - **line-bot-sdk** — Line Messaging API
-- **pypdf** — PDF Reader
-- **python-docx** — Word Document Reader
-- **openpyxl** — Excel Reader
+- **pypdf / python-docx / openpyxl** — File processors
 - **ngrok** — Public Tunnel (Line Bot)
+- **PyInstaller** — Build .exe installer
+- **tkinter** — GUI (Launcher + Setup Wizard)

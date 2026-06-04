@@ -12,6 +12,15 @@ from tkinter import ttk, filedialog, messagebox
 import tkinter.scrolledtext as scrolledtext
 import subprocess, threading, sys, os, shutil, webbrowser, json
 from datetime import datetime
+# ── Robust Python Executable (Fixed for PyInstaller) ───────────────────────
+def get_python_exe():
+    if getattr(sys, 'frozen', False):
+        import shutil
+        return shutil.which('python') or shutil.which('python3') or shutil.which('py') or 'python'
+    return sys.executable
+
+PYTHON_EXE = get_python_exe()
+
 
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(BASE_DIR, ".wizard_config.json")
@@ -89,7 +98,7 @@ class SetupWizard:
 
     # ── Shell ───────────────────────────────────────────────────────────────
     def _build_shell(self):
-        self.root.title("Gemma AI — Setup Wizard")
+        self.root.title("Local AI — Setup Wizard")
         self.root.geometry("700x640")
         self.root.resizable(True, True)
         self.root.configure(bg=BG)
@@ -492,7 +501,7 @@ class SetupWizard:
             for pkg, name in pkgs:
                 self.log(self.dep_box, f"ติดตั้ง {name}...", "m")
                 r = subprocess.run(
-                    [sys.executable, "-m", "pip", "install", pkg, "-q",
+                    [PYTHON_EXE, "-m", "pip", "install", pkg, "-q",
                      "--no-warn-script-location"],
                     capture_output=True, text=True, **flags
                 )
@@ -752,12 +761,16 @@ class SetupWizard:
         os.makedirs(dest, exist_ok=True)
 
         # ไฟล์ที่ต้องคัดลอก
-        files_to_copy = [
-            "main.py", "webchat.py", "file_processor.py",
-            "conversation.py", "database.py", "launcher.py",
-            "run.py", "requirements.txt", ".env.example",
-            ".gitignore", "start.bat", "install.bat",
-        ]
+        files_to_copy = ["main.py","webchat.py",
+        "file_processor.py","conversation.py",
+        "database.py","launcher.py","run.py",
+        "requirements.txt",".env.example",
+        "start.bat","install.bat",
+        "security.py","auth_middleware.py",
+        "user_manager.py","memory_manager.py",
+        "message_turbovec.py","admin_tools.py","webchat_ui.html",
+        "setup_wizard.py","README.md"]
+    
 
         copied, skipped = [], []
         for fname in files_to_copy:
@@ -787,7 +800,7 @@ class SetupWizard:
             if sys.platform == "win32":
                 flags["creationflags"] = subprocess.CREATE_NO_WINDOW
             subprocess.Popen(
-                [sys.executable, launcher],
+                [PYTHON_EXE, launcher],
                 cwd=os.path.dirname(launcher),
                 env=env, **flags
             )

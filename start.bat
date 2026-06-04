@@ -7,6 +7,7 @@ echo       Gemma AI - Starting...
 echo  ==========================================
 echo.
 
+
 cd /d "%~dp0"
 
 :: Check Python

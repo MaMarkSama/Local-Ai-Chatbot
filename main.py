@@ -19,6 +19,7 @@ from linebot.v3.messaging import (
 from linebot.v3.webhooks import MessageEvent, TextMessageContent, FileMessageContent
 from dotenv import load_dotenv
 from conversation import ConversationManager
+from memory_manager import MemoryManager
 
 load_dotenv()
 
@@ -35,7 +36,7 @@ SYSTEM_PROMPT             = os.getenv("SYSTEM_PROMPT", (
     "กระชับ และเป็นประโยชน์ ห้ามใช้ Markdown เช่น ** หรือ ### ตอบเป็นข้อความธรรมดาเท่านั้น "
     "หากไม่แน่ใจให้บอกตรง ๆ"
 ))
-PDF_MAX_CHARS = int(os.getenv("PDF_MAX_CHARS", "20000"))
+PDF_MAX_CHARS = int(os.getenv("PDF_MAX_CHARS", "6000"))
 
 if not LINE_CHANNEL_ACCESS_TOKEN or not LINE_CHANNEL_SECRET:
     raise ValueError("กรุณาตั้งค่า LINE_CHANNEL_ACCESS_TOKEN และ LINE_CHANNEL_SECRET ใน .env")
@@ -49,6 +50,7 @@ app = FastAPI(title="Line Bot + Gemma via Ollama", version="2.0.0")
 
 # ── Conversation Manager ─────────────────────────────────────────────────
 conversation_manager = ConversationManager(max_turns=10)
+memory_manager = MemoryManager(OLLAMA_BASE_URL, OLLAMA_MODEL, SYSTEM_PROMPT)
 
 
 # ── Download File จาก Line ────────────────────────────────────────────────
@@ -86,12 +88,19 @@ def extract_pdf_text(pdf_bytes: bytes, max_chars: int = 6000) -> str:
 
 # ── Ollama Chat ───────────────────────────────────────────────────────────
 async def chat_with_ollama(user_id: str, user_message: str) -> str:
-    conversation_manager.add_message(user_id, "user", user_message, "line")
+    # เธชเธฃเธธเธ memory เธ–เนเธฒเธเธ—เธชเธเธ—เธเธฒเธขเธฒเธงเน€เธเธดเธ
     messages = conversation_manager.get_messages(user_id)
+    messages = await memory_manager.maybe_summarize(user_id, user_id, messages)
+
+    conversation_manager.add_message(user_id, "user", user_message, "line", user_id=user_id)
+    messages = conversation_manager.get_messages(user_id)
+
+    # System prompt + memory context
+    enhanced_prompt = memory_manager.get_enhanced_system_prompt(user_id, user_id)
 
     payload = {
         "model":    OLLAMA_MODEL,
-        "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + messages,
+        "messages": [{"role": "system", "content": enhanced_prompt}] + messages,
         "stream":   False,
         "options": {
             "temperature":    0.7,
@@ -106,7 +115,7 @@ async def chat_with_ollama(user_id: str, user_message: str) -> str:
             response.raise_for_status()
             reply_content = response.json()["message"]["content"]
 
-        conversation_manager.add_message(user_id, "assistant", reply_content, "line")
+        conversation_manager.add_message(user_id, "assistant", reply_content, "line", user_id=user_id)
         reply = reply_content.strip()
         return reply if reply else "⚠️ ขอโทษครับ ไม่สามารถสร้างคำตอบได้ กรุณาลองใหม่"
 

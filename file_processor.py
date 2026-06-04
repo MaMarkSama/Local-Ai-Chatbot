@@ -35,7 +35,13 @@ def process_pdf(data: bytes, max_chars: int = MAX_CHARS) -> Tuple[str, int]:
 
 def process_csv(data: bytes, max_rows: int = 200) -> str:
     try:
-        text   = data.decode("utf-8-sig", errors="replace")
+        try:
+            text = data.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            try:
+                text = data.decode("tis-620")
+            except UnicodeDecodeError:
+                text = data.decode("windows-874", errors="replace")
         reader = csv.DictReader(io.StringIO(text))
         rows   = list(reader)
         headers = reader.fieldnames or []
