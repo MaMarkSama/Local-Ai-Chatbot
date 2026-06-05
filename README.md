@@ -8,6 +8,7 @@ Chatbot ขับเคลื่อนด้วย Local AI (Gemma / Llama / Qwe
 ## ✨ Features
 
 ### 🌐 Web Chat
+- **Web Search** — ค้นหาข้อมูลจากอินเทอร์เน็ตมาตอบได้ (DuckDuckGo)
 - UI คล้าย Claude.ai — Sidebar สลับแชทได้
 - **Login / Register / Guest mode**
 - **Chat History** แยกต่อ user — User Isolation สมบูรณ์
@@ -35,6 +36,7 @@ Chatbot ขับเคลื่อนด้วย Local AI (Gemma / Llama / Qwe
 | Excel | .xlsx, .xls | อ่านทุก Sheet |
 | Text | .txt, .md, .json ฯลฯ | อ่านตรงๆ |
 | รูปภาพ | .jpg, .png, .gif, .webp | วิเคราะห์ด้วย Vision AI |
+| Web | — | ค้นหาข้อมูลล่าสุดจากอินเทอร์เน็ต |
 
 ### 🔧 อื่นๆ
 - Code Block พร้อมปุ่มคัดลอก + ดาวน์โหลดเป็นไฟล์

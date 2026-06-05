@@ -8,16 +8,29 @@ memory_manager.py — Conversation Memory System
 import json
 import httpx
 import logging
+import os
 from datetime import datetime
 from typing import List, Dict, Optional
 from database import db
 
 logger = logging.getLogger(__name__)
+OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
 
 SUMMARY_THRESHOLD = 20   # สรุปเมื่อ messages เกินจำนวนนี้
 SUMMARY_KEEP      = 6    # เก็บ messages ล่าสุดไว้หลังสรุป
 MAX_MEMORY_CHARS  = 800  # ขนาดสูงสุดของ memory summary
 
+
+reasoning_framework = """
+[คำสั่งการประมวลผล]
+คุณต้องใช้กระบวนการคิดดังนี้ก่อนตอบเสมอ:
+1. การวิเคราะห์ (Analysis): แยกแยะว่าผู้ใช้ต้องการอะไรกันแน่
+2. การตรวจสอบ (Verification): หากมีข้อมูลจากไฟล์หรือเว็บ ให้ตรวจสอบว่าข้อมูลนั้นตอบคำถามได้จริงหรือไม่
+3. การสังเคราะห์ (Synthesis): รวบรวมคำตอบที่ถูกต้องและเป็นปัจจุบันที่สุด
+4. การกลั่นกรอง (Reflection): ตรวจสอบคำตอบสุดท้ายว่ามีส่วนไหนที่เดาเอาเองหรือไม่ (ถ้าไม่มีข้อมูลให้บอกตรงๆ ว่าไม่ทราบ)
+
+ตอบเป็นภาษาไทยที่เป็นธรรมชาติ สุภาพ และใช้ Markdown เน้นจุดสำคัญได้ตามความเหมาะสม
+"""
 
 class MemoryManager:
     def __init__(self, ollama_base_url: str, model: str, system_prompt: str):
@@ -68,7 +81,7 @@ class MemoryManager:
                     "model":   self.model,
                     "messages": [{"role": "user", "content": prompt}],
                     "stream":  False,
-                    "options": {"temperature": 0.3, "num_predict": 300},
+                    "options": {"temperature": 0.3, "num_predict": 300, "num_ctx": OLLAMA_NUM_CTX},
                 })
                 r.raise_for_status()
                 return r.json()["message"]["content"].strip()
@@ -86,10 +99,13 @@ class MemoryManager:
             f"จากบทสนทนานี้:\n"
             f"ผู้ใช้: {message}\n"
             f"AI: {reply}\n\n"
-            f"มีข้อมูลสำคัญเกี่ยวกับผู้ใช้ที่ควรจำระยะยาวไหม? "
-            f"เช่น ชื่อ อาชีพ ความชอบ เป้าหมาย ปัญหาที่แก้แล้ว "
-            f"ถ้ามีให้ตอบเป็น JSON: {{\"has_info\": true, \"info\": \"ข้อมูล\"}} "
-            f"ถ้าไม่มีตอบ: {{\"has_info\": false}}"
+            f"จงทำหน้าที่เป็นระบบ Knowledge Graph สกัด 'ความจริง (Fact)' เกี่ยวกับผู้ใช้ออกมา\n"
+            f"เช่น ชื่อ, อายุ, อาชีพ, ความชอบ, สิ่งที่ไม่ชอบ, งานที่กำลังทำ, หรือเป้าหมาย\n"
+            f"กฎการสกัด:\n"
+            f"1. สกัดเฉพาะข้อมูลที่เป็นความจริงและมีประโยชน์ในระยะยาวเท่านั้น\n"
+            f"2. สกัดเป็นประโยคสั้นๆ กระชับ (เช่น 'ผู้ใช้ชื่อสมชาย', 'ผู้ใช้ชอบเขียน Python')\n"
+            f"3. ถ้ามีข้อมูล ให้ตอบเป็น JSON: {{\"has_info\": true, \"info\": \"ความจริงที่สกัดได้\"}}\n"
+            f"4. ถ้าเป็นแค่การทักทาย หรือคำถามทั่วไป ให้ตอบ: {{\"has_info\": false}}"
         )
 
         try:
@@ -98,7 +114,7 @@ class MemoryManager:
                     "model":   self.model,
                     "messages": [{"role": "user", "content": prompt}],
                     "stream":  False,
-                    "options": {"temperature": 0.1, "num_predict": 150},
+                    "options": {"temperature": 0.1, "num_predict": 150, "num_ctx": OLLAMA_NUM_CTX},
                 })
                 r.raise_for_status()
                 text = r.json()["message"]["content"].strip()
@@ -145,7 +161,7 @@ class MemoryManager:
         if len(context) > MAX_MEMORY_CHARS:
             context = context[:MAX_MEMORY_CHARS] + "..."
 
-        return f"\n\n---\n{context}\n---"
+        return f"\n\n{reasoning_framework}\n---\n{context}\n---"
 
     def get_enhanced_system_prompt(self, user_id: str, session_id: str) -> str:
         """System prompt + memory context"""

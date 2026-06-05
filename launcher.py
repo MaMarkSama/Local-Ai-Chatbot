@@ -347,7 +347,11 @@ class GemmaLauncher:
     def on_close(self):
         if messagebox.askokcancel("ปิดโปรแกรม", "ต้องการปิด Launcher?\n(Server ทั้งหมดจะหยุดทำงาน)"):
             self.stop_all()
-            self.root.destroy()
+            try:
+                self.root.quit()
+                self.root.destroy()
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":

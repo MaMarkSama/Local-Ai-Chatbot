@@ -16,10 +16,12 @@ from linebot.v3.messaging import (
     PushMessageRequest,
     TextMessage,
 )
-from linebot.v3.webhooks import MessageEvent, TextMessageContent, FileMessageContent
+from linebot.v3.webhooks import MessageEvent, TextMessageContent, FileMessageContent, ImageMessageContent
 from dotenv import load_dotenv
 from conversation import ConversationManager
 from memory_manager import MemoryManager
+from web_searcher import web_searcher
+from usage_tracker import usage_tracker
 
 load_dotenv()
 
@@ -31,9 +33,11 @@ LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
 LINE_CHANNEL_SECRET       = os.getenv("LINE_CHANNEL_SECRET")
 OLLAMA_BASE_URL           = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL              = os.getenv("OLLAMA_MODEL", "gemma3:9b")
+OLLAMA_VISION_MODEL       = os.getenv("OLLAMA_VISION_MODEL", OLLAMA_MODEL)
+OLLAMA_NUM_CTX            = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
 SYSTEM_PROMPT             = os.getenv("SYSTEM_PROMPT", (
     "คุณคือผู้ช่วย AI ที่ฉลาดและเป็นมิตร ตอบคำถามภาษาไทยได้อย่างชัดเจน "
-    "กระชับ และเป็นประโยชน์ ห้ามใช้ Markdown เช่น ** หรือ ### ตอบเป็นข้อความธรรมดาเท่านั้น "
+    "กระชับ และเป็นประโยชน์ หากต้องเน้นข้อความให้ใช้ Markdown แบบพอดี "
     "หากไม่แน่ใจให้บอกตรง ๆ"
 ))
 PDF_MAX_CHARS = int(os.getenv("PDF_MAX_CHARS", "6000"))
@@ -87,24 +91,28 @@ def extract_pdf_text(pdf_bytes: bytes, max_chars: int = 6000) -> str:
 
 
 # ── Ollama Chat ───────────────────────────────────────────────────────────
-async def chat_with_ollama(user_id: str, user_message: str) -> str:
+async def chat_with_ollama(user_id: str, user_message: str, display_message: str = None) -> str:
     # เธชเธฃเธธเธ memory เธ–เนเธฒเธเธ—เธชเธเธ—เธเธฒเธขเธฒเธงเน€เธเธดเธ
     messages = conversation_manager.get_messages(user_id)
     messages = await memory_manager.maybe_summarize(user_id, user_id, messages)
 
-    conversation_manager.add_message(user_id, "user", user_message, "line", user_id=user_id)
+    msg_to_save = display_message if display_message is not None else user_message
+    conversation_manager.add_message(user_id, "user", msg_to_save, "line", user_id=user_id)
     messages = conversation_manager.get_messages(user_id)
 
     # System prompt + memory context
     enhanced_prompt = memory_manager.get_enhanced_system_prompt(user_id, user_id)
 
+    payload_messages = [{"role": "system", "content": enhanced_prompt}] + messages[:-1] + [{"role": "user", "content": user_message}]
+
     payload = {
         "model":    OLLAMA_MODEL,
-        "messages": [{"role": "system", "content": enhanced_prompt}] + messages,
+        "messages": payload_messages,
         "stream":   False,
         "options": {
             "temperature":    0.7,
             "num_predict":    -1,
+            "num_ctx":        OLLAMA_NUM_CTX,
             "repeat_penalty": 1.1,
         },
     }
@@ -113,9 +121,16 @@ async def chat_with_ollama(user_id: str, user_message: str) -> str:
         async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(f"{OLLAMA_BASE_URL}/api/chat", json=payload)
             response.raise_for_status()
-            reply_content = response.json()["message"]["content"]
+            data = response.json()
+            reply_content = data["message"]["content"]
+            
+            # Capture tokens
+            p_tokens = data.get("prompt_eval_count", 0)
+            c_tokens = data.get("eval_count", 0)
 
         conversation_manager.add_message(user_id, "assistant", reply_content, "line", user_id=user_id)
+        # Record usage (user_id is session_id for line bot)
+        usage_tracker.record_usage(user_id, p_tokens, c_tokens)
         reply = reply_content.strip()
         return reply if reply else "⚠️ ขอโทษครับ ไม่สามารถสร้างคำตอบได้ กรุณาลองใหม่"
 
@@ -154,6 +169,23 @@ async def _handle_text_async(event: MessageEvent):
     if user_message.strip().lower() in ["/reset", "ลืมทุกอย่าง", "เริ่มใหม่"]:
         conversation_manager.clear(user_id)
         reply = "🔄 ล้างประวัติการสนทนาแล้ว เริ่มต้นใหม่ได้เลยครับ!"
+    elif user_message.strip().lower().startswith("/search "):
+        query = user_message[8:].strip()
+        search_results = web_searcher.search(query)
+        if search_results:
+            enhanced_message = f"""
+[ข้อมูลล่าสุดจากอินเทอร์เน็ต]
+{search_results}
+
+[คำแนะนำ]
+กรุณาตอบคำถามของผู้ใช้โดยใช้ข้อมูลจาก Web Search ด้านบนเป็นหลัก ตอบเป็นภาษาไทยที่กระชับและเข้าใจง่าย
+
+[คำถามของผู้ใช้]
+{query}
+"""
+            reply = await chat_with_ollama(user_id, enhanced_message, display_message=query)
+        else:
+            reply = "ไม่พบข้อมูลจากการค้นหาเว็บครับ"
     else:
         reply = await chat_with_ollama(user_id, user_message)
 
@@ -203,12 +235,15 @@ async def _handle_file_async(event: MessageEvent):
         pdf_text  = extract_pdf_text(pdf_bytes, max_chars=PDF_MAX_CHARS)
         logger.info(f"[{user_id}] PDF extracted: {len(pdf_text)} chars")
 
-        prompt = (
-            f"ไฟล์ PDF ชื่อ '{file_name}' มีเนื้อหาดังนี้:\n\n"
-            f"{pdf_text}\n\n"
-            f"กรุณาสรุปเนื้อหาสำคัญของเอกสารนี้ให้กระชับและเข้าใจง่าย"
-        )
-        reply = await chat_with_ollama(user_id, prompt)
+        prompt = f"""คุณเป็นผู้เชี่ยวชาญด้านการวิเคราะห์เอกสาร
+ไฟล์ PDF ชื่อ '{file_name}' มีเนื้อหาดังนี้:
+
+[เนื้อหาเอกสาร]
+{pdf_text}
+
+[คำสั่ง]
+กรุณาสรุปเนื้อหาสำคัญของเอกสารนี้ให้กระชับและเข้าใจง่าย สกัดข้อมูลสำคัญเป็น Bullet points"""
+        reply = await chat_with_ollama(user_id, prompt, display_message=f"[ส่งไฟล์ PDF: {file_name}] ขอสรุปเอกสาร")
 
     except Exception as e:
         logger.error(f"[{user_id}] PDF error: {e}")
@@ -222,6 +257,66 @@ async def _handle_file_async(event: MessageEvent):
             )
         )
 
+
+
+# ── Handler: รูปภาพ (Multimodal) ──────────────────────────────────────────────────────────
+@handler.add(MessageEvent, message=ImageMessageContent)
+def handle_image(event: MessageEvent):
+    asyncio.create_task(_handle_image_async(event))
+
+async def _handle_image_async(event: MessageEvent):
+    user_id = event.source.user_id
+    logger.info(f"[{user_id}] IMAGE received")
+    
+    async with AsyncApiClient(configuration) as api_client:
+        await AsyncMessagingApi(api_client).reply_message(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text="🖼️ กำลังวิเคราะห์รูปภาพ...")]
+            )
+        )
+    
+    try:
+        image_bytes = await download_line_file(event.message.id)
+        import base64
+        b64_image = base64.b64encode(image_bytes).decode('utf-8')
+        
+        payload = {
+            "model": OLLAMA_VISION_MODEL,
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": "วิเคราะห์และอธิบายรูปภาพนี้อย่างละเอียด", "images": [b64_image]}
+            ],
+            "stream": False,
+            "options": {"temperature": 0.7, "num_predict": -1, "num_ctx": OLLAMA_NUM_CTX}
+        }
+        
+        async with httpx.AsyncClient(timeout=300.0) as client:
+            response = await client.post(f"{OLLAMA_BASE_URL}/api/chat", json=payload)
+            response.raise_for_status()
+            data = response.json()
+            reply = data["message"]["content"].strip()
+            p_tokens = data.get("prompt_eval_count", 0)
+            c_tokens = data.get("eval_count", 0)
+            
+        conversation_manager.add_message(user_id, "user", "[ส่งรูปภาพ]", "line", user_id=user_id)
+        conversation_manager.add_message(user_id, "assistant", reply, "line", user_id=user_id)
+        try:
+            from usage_tracker import usage_tracker
+            usage_tracker.record_usage(user_id, p_tokens, c_tokens)
+        except: pass
+        
+    except Exception as e:
+        logger.error(f"[{user_id}] Image processing error: {e}")
+        reply = f"❌ ไม่สามารถวิเคราะห์รูปภาพได้: {e}"
+
+    async with AsyncApiClient(configuration) as api_client:
+        await AsyncMessagingApi(api_client).push_message(
+            PushMessageRequest(
+                to=user_id,
+                messages=[TextMessage(text=reply)]
+            )
+        )
 
 # ── Health Check ──────────────────────────────────────────────────────────
 @app.get("/health")

@@ -493,6 +493,7 @@ class SetupWizard:
             ("python-docx>=1.1.0",      "python-docx"),
             ("openpyxl>=3.1.0",         "openpyxl"),
             ("python-multipart>=0.0.9", "multipart"),
+            ("duckduckgo-search>=6.0.0", "Web Search"),
         ]
 
         def run():
@@ -768,7 +769,7 @@ class SetupWizard:
         "start.bat","install.bat",
         "security.py","auth_middleware.py",
         "user_manager.py","memory_manager.py",
-        "message_turbovec.py","admin_tools.py","webchat_ui.html",
+        "message_turbovec.py","admin_tools.py", "web_searcher.py", "usage_tracker.py","webchat_ui.html",
         "setup_wizard.py","README.md"]
     
 
@@ -804,7 +805,11 @@ class SetupWizard:
                 cwd=os.path.dirname(launcher),
                 env=env, **flags
             )
-        self.root.destroy()
+        try:
+            self.root.quit()
+            self.root.destroy()
+        except Exception:
+            pass
 
     # ── Uninstall ──────────────────────────────────────────────────────────
     def uninstall(self):
@@ -852,7 +857,11 @@ class SetupWizard:
             msg += f"\nเก็บไว้: {', '.join(skipped)}"
 
         messagebox.showinfo("เสร็จแล้ว", msg)
-        self.root.destroy()
+        try:
+            self.root.quit()
+            self.root.destroy()
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":

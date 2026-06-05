@@ -39,6 +39,8 @@ class Database:
                     role        TEXT    NOT NULL,
                     content     TEXT    NOT NULL,
                     created_at  TEXT    NOT NULL,
+                    prompt_tokens     INTEGER,
+                    completion_tokens INTEGER,
                     FOREIGN KEY (session_id) REFERENCES sessions(id)
                 );
                 CREATE INDEX IF NOT EXISTS idx_messages_session
@@ -54,7 +56,26 @@ class Database:
                 );
                 CREATE INDEX IF NOT EXISTS idx_memories_user
                     ON user_memories(user_id, type);
+
+                CREATE TABLE IF NOT EXISTS user_files (
+                    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id     TEXT NOT NULL,
+                    filename    TEXT NOT NULL,
+                    file_hash   TEXT NOT NULL,
+                    file_type   TEXT,
+                    file_summary TEXT,
+                    created_at  TEXT NOT NULL,
+                    UNIQUE(user_id, file_hash)
+                );
             """)
+
+            # migrate: add token columns if missing
+            try:
+                conn.execute("ALTER TABLE messages ADD COLUMN prompt_tokens INTEGER")
+                conn.execute("ALTER TABLE messages ADD COLUMN completion_tokens INTEGER")
+                conn.commit()
+            except Exception: pass
+
             # migrate: add title column if missing
             try:
                 conn.execute("ALTER TABLE sessions ADD COLUMN title TEXT")
@@ -277,6 +298,34 @@ class Database:
             rows = conn.execute(f"SELECT * FROM {table} LIMIT ?", (limit,)).fetchall()
             payload["tables"][table] = [dict(r) for r in rows]
         return payload
+
+
+    # ── File Library ──────────────────────────────────────────────────────
+    def save_file_meta(self, user_id: str, filename: str, file_hash: str, 
+                      file_type: str, summary: str = ""):
+        now = datetime.now().isoformat()
+        conn = self._conn()
+        conn.execute("""
+            INSERT INTO user_files (user_id, filename, file_hash, file_type, file_summary, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id, file_hash) DO UPDATE SET
+                filename = excluded.filename,
+                file_summary = CASE WHEN excluded.file_summary != '' THEN excluded.file_summary ELSE user_files.file_summary END
+        """, (user_id, filename, file_hash, file_type, summary, now))
+        conn.commit()
+
+    def get_user_files(self, user_id: str) -> List[Dict]:
+        conn = self._conn()
+        rows = conn.execute("""
+            SELECT * FROM user_files WHERE user_id = ? ORDER BY created_at DESC
+        """, (user_id,)).fetchall()
+        return [dict(r) for r in rows]
+
+    def delete_file(self, user_id: str, file_hash: str):
+        conn = self._conn()
+        conn.execute("DELETE FROM user_files WHERE user_id = ? AND file_hash = ?", (user_id, file_hash))
+        conn.execute("DELETE FROM document_vectors WHERE user_id = ? AND file_hash = ?", (user_id, file_hash))
+        conn.commit()
 
 # Singleton
 db = Database()

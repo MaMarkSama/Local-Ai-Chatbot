@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
   <title>Gemma AI</title>
   <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
     rel="stylesheet">
   <style>
     *,
@@ -17,66 +17,74 @@
       padding: 0
     }
 
+    /* ── Dark Mode: Forest Night ── */
     [data-theme="dark"] {
-      --bg: #0d0f14;
-      --sb: #111318;
-      --surface: #151821;
-      --surface2: #1c2030;
-      --border: #252a3d;
-      --text: #e2e8f8;
-      --muted: #6b7280;
-      --muted2: #9ca3b0;
-      --user-bg: #1e3564;
-      --bot-bg: #161b2e;
-      --code-bg: #0d1117;
-      --code-bar: #161b22;
-      --shadow: rgba(0, 0, 0, .35);
-      --input-bg: #151821;
-      --overlay: rgba(0, 0, 0, .7);
+      --bg: #131510;
+      --sb: #171a14;
+      --surface: #1c2018;
+      --surface2: #222720;
+      --border: rgba(255, 255, 255, 0.07);
+      --text: #e8e6df;
+      --muted: #7a7d72;
+      --muted2: #a8aa9f;
+      --user-bg: #2d3d28;
+      --bot-bg: #1c2018;
+      --code-bg: #0f1209;
+      --code-bar: #171a14;
+      --shadow: rgba(0, 0, 0, 0.45);
+      --input-bg: #1c2018;
+      --overlay: rgba(0, 0, 0, 0.75);
+      --accent-glow: rgba(130, 165, 90, 0.18);
     }
 
+    /* ── Light Mode: Natural Paper ── */
     [data-theme="light"] {
-      --bg: #f7f7f5;
-      --sb: #ffffff;
+      --bg: #f5f3ee;
+      --sb: #faf9f6;
       --surface: #ffffff;
-      --surface2: #f0efeb;
-      --border: #e0ddd8;
-      --text: #1a1a1a;
-      --muted: #6b7280;
-      --muted2: #9ca3af;
-      --user-bg: #2563eb;
+      --surface2: #eeecea;
+      --border: rgba(0, 0, 0, 0.08);
+      --text: #1c1c1a;
+      --muted: #8a8880;
+      --muted2: #6b6960;
+      --user-bg: #3d4f38;
       --bot-bg: #ffffff;
-      --code-bg: #1e1e2e;
-      --code-bar: #2a2a3d;
-      --shadow: rgba(0, 0, 0, .07);
+      --code-bg: #1a1e15;
+      --code-bar: #232920;
+      --shadow: rgba(0, 0, 0, 0.06);
       --input-bg: #ffffff;
-      --overlay: rgba(0, 0, 0, .5);
+      --overlay: rgba(0, 0, 0, 0.4);
+      --accent-glow: rgba(100, 130, 70, 0.12);
     }
 
+    :root {
+      --accent: #82a55a;
+      --accent2: #a8c080;
+      --accent-warm: #c4a96a;
+      --green: #6aaa5e;
+      --red: #c0574a;
+      --font: 'DM Sans', 'Noto Sans Thai', sans-serif;
+      --font-display: 'DM Serif Display', 'Noto Sans Thai', serif;
+      --mono: 'DM Mono', monospace;
+      --sb-w: 268px;
+      --radius: 12px;
+      --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
     .model-selector {
       background: var(--surface2);
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 8px;
-      padding: 4px 8px;
+      padding: 4px 10px;
       font-family: var(--font);
-      font-size: 12px;
+      font-size: 11.5px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
       outline: none;
       cursor: pointer;
       margin-right: 8px;
-      max-width: 150px;
-    }
-
-    :root {
-      --accent: #6c8fff;
-      --accent2: #a78bfa;
-      --green: #22c55e;
-      --red: #ef4444;
-      --font: 'Noto Sans Thai', sans-serif;
-      --mono: 'JetBrains Mono', monospace;
-      --sb-w: 268px;
-      --radius: 14px
+      max-width: 160px;
     }
 
     html,
@@ -86,9 +94,12 @@
       color: var(--text);
       font-family: var(--font);
       font-size: 14px;
-      line-height: 1.6;
+      font-weight: 350;
+      line-height: 1.65;
+      letter-spacing: 0.01em;
       overflow: hidden;
-      transition: background .2s, color .2s
+      transition: background 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ── Auth Screen ── */
@@ -112,31 +123,37 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 36px 40px;
-      width: 380px;
-      box-shadow: 0 24px 64px var(--shadow)
+      padding: 40px 44px;
+      width: 390px;
+      box-shadow: 0 2px 40px var(--shadow), 0 0 0 1px var(--border)
     }
 
     .auth-logo {
       text-align: center;
-      margin-bottom: 24px
+      margin-bottom: 28px
     }
 
     .auth-logo div {
-      font-size: 48px;
-      margin-bottom: 8px
+      font-size: 40px;
+      margin-bottom: 10px;
+      filter: grayscale(0.2)
     }
 
     .auth-logo h1 {
-      font-size: 20px;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
       color: var(--text)
     }
 
     .auth-logo p {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--muted);
-      margin-top: 4px
+      margin-top: 5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 400
     }
 
     .auth-tabs {
@@ -154,16 +171,17 @@
       padding: 8px;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 12.5px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
       color: var(--muted);
-      transition: all .2s
+      transition: var(--transition)
     }
 
     .auth-tab.active {
       background: var(--surface);
       color: var(--text);
-      box-shadow: 0 1px 4px var(--shadow)
+      box-shadow: 0 1px 6px var(--shadow)
     }
 
     .auth-field {
@@ -172,75 +190,85 @@
 
     .auth-field label {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
       font-weight: 500;
-      margin-bottom: 5px
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 6px
     }
 
     .auth-field input {
       width: 100%;
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 10px 13px;
+      border-radius: 10px;
+      padding: 11px 14px;
       color: var(--text);
       font-family: var(--font);
       font-size: 14px;
+      font-weight: 350;
       outline: none;
-      transition: border-color .2s
+      transition: var(--transition)
     }
 
     .auth-field input:focus {
-      border-color: var(--accent)
+      border-color: var(--accent);
+      background: var(--surface)
     }
 
     .auth-btn {
       width: 100%;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      background: var(--accent);
       border: none;
       color: #fff;
-      padding: 11px;
+      padding: 12px;
       border-radius: 10px;
       font-family: var(--font);
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 13.5px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
       cursor: pointer;
       margin-top: 4px;
-      transition: opacity .2s
+      transition: var(--transition)
     }
 
     .auth-btn:hover {
-      opacity: .88
+      background: var(--accent2);
+      transform: translateY(-1px)
     }
 
     .auth-btn:disabled {
-      opacity: .5;
-      cursor: not-allowed
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none
     }
 
     .auth-error {
       color: var(--red);
-      font-size: 12px;
+      font-size: 11.5px;
       margin-top: 8px;
       text-align: center;
-      min-height: 18px
+      min-height: 18px;
+      letter-spacing: 0.01em
     }
 
     .auth-guest {
       text-align: center;
-      margin-top: 14px;
+      margin-top: 16px;
       font-size: 12px;
       color: var(--muted)
     }
 
     .auth-guest span {
       color: var(--accent);
-      cursor: pointer
+      cursor: pointer;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s
     }
 
     .auth-guest span:hover {
-      text-decoration: underline
+      border-bottom-color: var(--accent)
     }
 
     /* ── Layout ── */
@@ -257,11 +285,11 @@
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      transition: transform .25s, background .2s
+      transition: transform .28s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s
     }
 
     .sb-top {
-      padding: 12px 10px 8px;
+      padding: 14px 10px 8px;
       display: flex;
       flex-direction: column;
       gap: 6px
@@ -270,18 +298,19 @@
     .btn-new {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
       width: 100%;
-      padding: 9px 12px;
+      padding: 9px 13px;
       border-radius: 10px;
       border: 1px solid var(--border);
       background: transparent;
       color: var(--text);
       font-family: var(--font);
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 400;
+      letter-spacing: 0.02em;
       cursor: pointer;
-      transition: background .15s, border-color .15s
+      transition: var(--transition)
     }
 
     .btn-new:hover {
@@ -290,14 +319,14 @@
     }
 
     .btn-new .ico {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 13px;
       flex-shrink: 0
     }
 
@@ -314,12 +343,14 @@
       color: var(--text);
       font-family: var(--font);
       font-size: 12px;
+      font-weight: 350;
       outline: none;
-      transition: border-color .2s
+      transition: var(--transition)
     }
 
     .sb-search:focus {
-      border-color: var(--accent)
+      border-color: var(--accent);
+      background: var(--surface)
     }
 
     .search-ico {
@@ -328,16 +359,16 @@
       top: 50%;
       transform: translateY(-50%);
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
       pointer-events: none
     }
 
     .sb-section {
-      padding: 6px 10px 2px;
-      font-size: 10px;
+      padding: 10px 12px 3px;
+      font-size: 9.5px;
       font-weight: 600;
       color: var(--muted);
-      letter-spacing: .8px;
+      letter-spacing: 0.12em;
       text-transform: uppercase
     }
 
@@ -348,7 +379,7 @@
     }
 
     .chat-list::-webkit-scrollbar {
-      width: 3px
+      width: 2px
     }
 
     .chat-list::-webkit-scrollbar-thumb {
@@ -360,10 +391,10 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 8px;
+      padding: 8px 10px;
       border-radius: 9px;
       cursor: pointer;
-      transition: background .12s;
+      transition: var(--transition);
       margin-bottom: 1px
     }
 
@@ -377,9 +408,9 @@
     }
 
     .chat-item-ico {
-      font-size: 15px;
+      font-size: 14px;
       flex-shrink: 0;
-      opacity: .8
+      opacity: .65
     }
 
     .chat-item-body {
@@ -389,15 +420,16 @@
 
     .chat-item-title {
       font-size: 12.5px;
-      font-weight: 500;
+      font-weight: 400;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: var(--text)
+      color: var(--text);
+      letter-spacing: 0.01em
     }
 
     .chat-item-sub {
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--muted);
       white-space: nowrap;
       overflow: hidden;
@@ -423,8 +455,8 @@
       cursor: pointer;
       padding: 3px 4px;
       border-radius: 5px;
-      font-size: 12px;
-      transition: color .15s
+      font-size: 11px;
+      transition: color 0.15s
     }
 
     .ico-btn:hover {
@@ -444,14 +476,13 @@
 
     /* User panel at bottom of sidebar */
     .sb-user {
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
-      transition: background .15s;
-      border-radius: 0 0 0 0
+      transition: var(--transition);
     }
 
     .sb-user:hover {
@@ -459,15 +490,15 @@
     }
 
     .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 600;
       color: #fff;
       flex-shrink: 0
     }
@@ -479,16 +510,19 @@
 
     .user-name {
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--text);
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis
+      text-overflow: ellipsis;
+      letter-spacing: 0.01em
     }
 
     .user-role {
-      font-size: 10px;
-      color: var(--muted)
+      font-size: 9.5px;
+      color: var(--muted);
+      letter-spacing: 0.07em;
+      text-transform: uppercase
     }
 
     .user-menu {
@@ -498,9 +532,9 @@
       width: 240px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 6px;
-      box-shadow: 0 8px 32px var(--shadow);
+      box-shadow: 0 8px 40px var(--shadow);
       z-index: 100;
       display: none
     }
@@ -517,8 +551,9 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 13px;
+      font-weight: 350;
       color: var(--text);
-      transition: background .15s
+      transition: var(--transition)
     }
 
     .menu-item:hover {
@@ -542,19 +577,19 @@
       flex-direction: column;
       min-width: 0;
       background: var(--bg);
-      transition: background .2s
+      transition: background 0.3s
     }
 
     .topbar {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 0 20px;
+      padding: 0 22px;
       height: 52px;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
-      transition: background .2s
+      transition: background 0.3s
     }
 
     .menu-btn {
@@ -573,22 +608,25 @@
     }
 
     .topbar-title {
-      font-size: 14px;
-      font-weight: 600;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis
     }
 
     .topbar-sub {
-      font-size: 11px;
-      color: var(--muted)
+      font-size: 10.5px;
+      color: var(--muted);
+      letter-spacing: 0.04em
     }
 
     .topbar-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       flex-shrink: 0
     }
 
@@ -600,15 +638,16 @@
       height: 34px;
       border-radius: 9px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all .2s
+      transition: var(--transition)
     }
 
     .theme-btn:hover {
-      border-color: var(--accent)
+      border-color: var(--accent);
+      background: var(--accent-glow)
     }
 
     .memory-btn {
@@ -618,14 +657,15 @@
       padding: 5px 12px;
       border-radius: 9px;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 11.5px;
       font-family: var(--font);
-      transition: all .2s
+      letter-spacing: 0.02em;
+      transition: var(--transition)
     }
 
     .memory-btn:hover {
-      border-color: var(--accent2);
-      color: var(--accent2)
+      border-color: var(--accent);
+      color: var(--accent)
     }
 
     /* ── Messages ── */
@@ -639,7 +679,7 @@
     }
 
     .msgs::-webkit-scrollbar {
-      width: 4px
+      width: 3px
     }
 
     .msgs::-webkit-scrollbar-thumb {
@@ -654,35 +694,38 @@
       align-items: center;
       justify-content: center;
       flex: 1;
-      padding: 40px 24px;
+      padding: 48px 24px;
       text-align: center;
-      animation: fadeUp .3s ease
+      animation: fadeUp .4s ease
     }
 
     .welcome-av {
-      width: 76px;
-      height: 76px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 36px;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 32px rgba(108, 143, 255, .25)
+      font-size: 32px;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 32px var(--accent-glow)
     }
 
     .welcome h2 {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 8px
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px
     }
 
     .welcome p {
       font-size: 13px;
       color: var(--muted);
-      line-height: 1.85;
-      max-width: 380px
+      line-height: 1.9;
+      max-width: 360px;
+      font-weight: 350
     }
 
     .sugs {
@@ -690,20 +733,21 @@
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
-      margin-top: 22px;
+      margin-top: 24px;
       max-width: 520px
     }
 
     .sug {
       background: var(--surface);
       border: 1px solid var(--border);
-      color: var(--text);
+      color: var(--muted2);
       padding: 8px 16px;
       border-radius: 20px;
-      font-size: 12.5px;
+      font-size: 12px;
       font-family: var(--font);
+      font-weight: 350;
       cursor: pointer;
-      transition: all .2s
+      transition: var(--transition)
     }
 
     .sug:hover {
@@ -712,77 +756,214 @@
       transform: translateY(-2px)
     }
 
-    /* Message rows */
-    .msg-row {
-      padding: 6px 24px;
+
+
+
+    /* Message rows - Hybrid Style */
+    .msgs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 0 120px 0;
+      /* Extra padding at bottom for floating input */
       display: flex;
-      gap: 12px;
-      max-width: 860px;
-      margin: 0 auto;
+      flex-direction: column;
+      scroll-behavior: smooth;
+    }
+
+    .msg-row {
+      display: flex;
       width: 100%;
-      animation: fadeUp .2s ease
+      padding: 18px 20px;
+      animation: fadeUp .35s ease;
     }
 
+    /* Bot messages: Centered, Document style */
+    .msg-row.bot {
+      justify-content: center;
+      background-color: transparent;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .msg-row.bot:last-child {
+      border-bottom: none;
+    }
+
+    .msg-row.bot .msg-inner {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* User messages: Right aligned, Bubble style */
     .msg-row.user {
-      flex-direction: row-reverse
+      justify-content: center;
+      background-color: transparent;
+      padding: 10px 20px;
     }
 
+    .msg-row.user .msg-inner {
+      display: flex;
+      width: 100%;
+      max-width: 800px;
+      justify-content: flex-end;
+    }
+
+    /* Avatars */
     .msg-av {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 14px;
       flex-shrink: 0;
-      margin-top: 2px
+      margin-top: 3px;
     }
 
     .msg-row.bot .msg-av {
-      background: linear-gradient(135deg, var(--accent), var(--accent2))
+      background: var(--accent);
+      color: white;
+      font-size: 13px;
     }
 
+    /* Hide avatar for user to match bubble style */
     .msg-row.user .msg-av {
-      background: var(--user-bg)
+      display: none;
     }
 
+    /* Body */
     .msg-body {
-      max-width: 74%;
       display: flex;
       flex-direction: column;
-      gap: 3px
+      gap: 5px;
+      color: var(--text);
+    }
+
+    .msg-row.bot .msg-body {
+      flex: 1;
+      min-width: 0;
     }
 
     .msg-row.user .msg-body {
-      align-items: flex-end
+      max-width: 75%;
+      align-items: flex-end;
     }
 
-    .bubble {
-      padding: 11px 15px;
-      border-radius: var(--radius);
-      font-size: 13.5px;
-      line-height: 1.78;
-      word-break: break-word;
-      transition: background .2s
+    /* Label */
+    .msg-label {
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .msg-row.bot .bubble {
-      background: var(--bot-bg);
-      border: 1px solid var(--border);
-      border-top-left-radius: 4px
+    .msg-row.user .msg-label {
+      display: none;
+      /* Hide label for user bubble */
     }
 
-    .msg-row.user .bubble {
-      background: var(--user-bg);
-      color: #fff;
-      border-top-right-radius: 4px
+    .msg-label .name {
+      color: var(--muted);
     }
 
     .msg-time {
-      font-size: 10px;
+      font-size: 10.5px;
       color: var(--muted);
-      padding: 0 4px
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .msg-row.user .msg-time {
+      padding: 0 4px;
+    }
+
+    /* Bubbles */
+    .bubble {
+      font-size: 14px;
+      line-height: 1.75;
+      word-break: break-word;
+      font-weight: 350;
+    }
+
+    .msg-row.bot .bubble {
+      padding: 0;
+      border-radius: 0;
+      background: transparent !important;
+      border: none !important;
+      color: var(--text) !important;
+    }
+
+    .msg-row.user .bubble {
+      padding: 11px 17px;
+      border-radius: 18px;
+      border-bottom-right-radius: 5px;
+      background: var(--user-bg);
+      color: #f0ede6;
+      font-weight: 350;
+    }
+
+    /* Modern Floating Input Area */
+    .input-area {
+      position: absolute;
+      bottom: 0;
+      left: var(--sb-w);
+      /* Respect sidebar width */
+      right: 0;
+      padding: 0 20px 24px;
+      background: linear-gradient(to top, var(--bg) 60%, transparent);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+      /* Let clicks pass through background */
+      transition: left .28s cubic-bezier(0.4, 0, 0.2, 1);
+      /* Animate with sidebar */
+    }
+
+    @media(max-width:680px) {
+      .input-area {
+        left: 0;
+      }
+    }
+
+    .input-inner {
+      width: 100%;
+      max-width: 800px;
+      /* Match message width */
+      pointer-events: auto;
+      /* Enable clicks on the actual input */
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .input-box {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
+      transition: border-color 0.22s, box-shadow 0.22s;
+      box-shadow: 0 2px 20px var(--shadow);
+    }
+
+    .input-box:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 4px 28px var(--accent-glow);
     }
 
     /* Memory indicator */
@@ -790,18 +971,19 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      background: rgba(167, 139, 250, .12);
-      border: 1px solid rgba(167, 139, 250, .3);
+      background: rgba(168, 192, 128, 0.1);
+      border: 1px solid rgba(168, 192, 128, 0.25);
       border-radius: 6px;
       padding: 2px 8px;
       font-size: 10px;
       color: var(--accent2);
-      margin-bottom: 6px
+      margin-bottom: 6px;
+      letter-spacing: 0.04em
     }
 
     /* Code */
     .code-block {
-      margin: 8px 0;
+      margin: 10px 0;
       border-radius: 10px;
       overflow: hidden;
       border: 1px solid var(--border)
@@ -818,9 +1000,11 @@
 
     .code-lang {
       font-family: var(--mono);
-      font-size: 11px;
-      color: var(--accent);
-      font-weight: 500
+      font-size: 10.5px;
+      color: var(--accent2);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase
     }
 
     .code-btns {
@@ -834,10 +1018,10 @@
       color: var(--muted2);
       padding: 3px 10px;
       border-radius: 5px;
-      font-size: 11px;
+      font-size: 10.5px;
       cursor: pointer;
       font-family: var(--font);
-      transition: all .15s
+      transition: var(--transition)
     }
 
     .code-btn:hover {
@@ -858,8 +1042,8 @@
       overflow-x: auto;
       font-family: var(--mono);
       font-size: 12.5px;
-      line-height: 1.65;
-      color: #c9d1d9
+      line-height: 1.7;
+      color: #b8c4a0
     }
 
     /* File badge */
@@ -869,39 +1053,40 @@
       gap: 6px;
       border-radius: 8px;
       padding: 5px 11px;
-      font-size: 12px;
+      font-size: 11.5px;
       margin-bottom: 8px;
-      border: 1px solid
+      border: 1px solid;
+      font-weight: 400
     }
 
     .file-badge.pdf {
-      background: rgba(239, 68, 68, .08);
-      border-color: rgba(239, 68, 68, .3);
-      color: #f87171
+      background: rgba(192, 87, 74, .07);
+      border-color: rgba(192, 87, 74, .25);
+      color: #d0756a
     }
 
     .file-badge.csv {
-      background: rgba(34, 197, 94, .08);
-      border-color: rgba(34, 197, 94, .3);
-      color: #4ade80
+      background: rgba(106, 170, 94, .07);
+      border-color: rgba(106, 170, 94, .25);
+      color: #7aba6e
     }
 
     .file-badge.img {
-      background: rgba(167, 139, 250, .08);
-      border-color: rgba(167, 139, 250, .3);
+      background: rgba(168, 192, 128, .08);
+      border-color: rgba(168, 192, 128, .25);
       color: var(--accent2)
     }
 
     .file-badge.other {
-      background: rgba(108, 143, 255, .08);
-      border-color: rgba(108, 143, 255, .3);
+      background: rgba(130, 165, 90, .07);
+      border-color: rgba(130, 165, 90, .25);
       color: var(--accent)
     }
 
     /* Typing */
     .tdot {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
       background: var(--accent);
       display: inline-block;
@@ -922,19 +1107,19 @@
       80%,
       100% {
         transform: translateY(0);
-        opacity: .3
+        opacity: .25
       }
 
       40% {
-        transform: translateY(-7px);
+        transform: translateY(-6px);
         opacity: 1
       }
     }
 
     .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid var(--border);
+      width: 13px;
+      height: 13px;
+      border: 1.5px solid var(--border);
       border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin .8s linear infinite;
@@ -952,17 +1137,17 @@
       padding: 10px 24px 20px;
       background: var(--bg);
       flex-shrink: 0;
-      transition: background .2s
+      transition: background 0.3s
     }
 
     .input-inner {
-      max-width: 860px;
+      max-width: 1000px;
       margin: 0 auto
     }
 
     .toolbar {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       margin-bottom: 8px;
       flex-wrap: wrap
     }
@@ -976,10 +1161,12 @@
       color: var(--muted);
       padding: 5px 11px;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-family: var(--font);
+      font-weight: 400;
+      letter-spacing: 0.02em;
       cursor: pointer;
-      transition: all .2s;
+      transition: var(--transition);
       white-space: nowrap
     }
 
@@ -998,9 +1185,9 @@
       gap: 7px;
       border-radius: 8px;
       padding: 5px 11px;
-      font-size: 12px;
-      background: rgba(108, 143, 255, .08);
-      border: 1px solid rgba(108, 143, 255, .3);
+      font-size: 11.5px;
+      background: rgba(130, 165, 90, 0.07);
+      border: 1px solid rgba(130, 165, 90, 0.25);
       color: var(--accent)
     }
 
@@ -1013,7 +1200,7 @@
       border: none;
       color: var(--muted);
       cursor: pointer;
-      font-size: 14px
+      font-size: 13px
     }
 
     .input-box {
@@ -1024,13 +1211,13 @@
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 10px 12px;
-      transition: border-color .2s, box-shadow .2s;
+      transition: border-color 0.22s, box-shadow 0.22s;
       box-shadow: 0 2px 16px var(--shadow)
     }
 
     .input-box:focus-within {
       border-color: var(--accent);
-      box-shadow: 0 2px 24px rgba(108, 143, 255, .12)
+      box-shadow: 0 2px 24px var(--accent-glow)
     }
 
     textarea {
@@ -1041,7 +1228,8 @@
       color: var(--text);
       font-family: var(--font);
       font-size: 14px;
-      line-height: 1.6;
+      font-weight: 350;
+      line-height: 1.65;
       resize: none;
       max-height: 160px;
       min-height: 24px
@@ -1052,44 +1240,46 @@
     }
 
     .send-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--accent);
       border: none;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: opacity .2s, transform .1s
+      transition: opacity 0.2s, transform 0.1s, background 0.2s
     }
 
     .send-btn:hover {
-      opacity: .88
+      background: var(--accent2);
+      opacity: 1
     }
 
     .send-btn:active {
-      transform: scale(.93)
+      transform: scale(.92)
     }
 
     .send-btn:disabled {
-      opacity: .35;
+      opacity: .3;
       cursor: not-allowed
     }
 
     .send-btn svg {
-      width: 17px;
-      height: 17px;
+      width: 16px;
+      height: 16px;
       fill: white
     }
 
     .hint {
       text-align: center;
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--muted);
       margin-top: 7px;
-      opacity: .7
+      opacity: .6;
+      letter-spacing: 0.02em
     }
 
     /* Modal */
@@ -1101,7 +1291,7 @@
       z-index: 200;
       align-items: center;
       justify-content: center;
-      backdrop-filter: blur(4px)
+      backdrop-filter: blur(6px)
     }
 
     .modal-bg.show {
@@ -1111,32 +1301,35 @@
     .modal {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
+      border-radius: 18px;
+      padding: 28px;
       width: 400px;
-      box-shadow: 0 24px 64px var(--shadow);
+      box-shadow: 0 24px 80px var(--shadow);
       max-height: 80vh;
       overflow-y: auto
     }
 
     .modal h3 {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 16px
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 18px
     }
 
     .modal input {
       width: 100%;
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 9px;
+      border-radius: 10px;
       padding: 10px 13px;
       color: var(--text);
       font-family: var(--font);
       font-size: 14px;
+      font-weight: 350;
       outline: none;
       margin-bottom: 12px;
-      transition: border-color .2s
+      transition: var(--transition)
     }
 
     .modal input:focus {
@@ -1158,18 +1351,28 @@
       border-radius: 9px;
       font-family: var(--font);
       font-size: 13px;
-      cursor: pointer
+      cursor: pointer;
+      transition: var(--transition)
+    }
+
+    .btn-cancel:hover {
+      border-color: var(--muted)
     }
 
     .btn-ok {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      background: var(--accent);
       border: none;
       color: #fff;
       padding: 8px 18px;
       border-radius: 9px;
       font-family: var(--font);
       font-size: 13px;
-      cursor: pointer
+      cursor: pointer;
+      transition: var(--transition)
+    }
+
+    .btn-ok:hover {
+      background: var(--accent2)
     }
 
     .btn-danger {
@@ -1210,10 +1413,12 @@
     }
 
     .memory-item strong {
-      color: var(--accent2);
-      font-size: 10px;
+      color: var(--accent);
+      font-size: 9.5px;
       display: block;
-      margin-bottom: 2px
+      margin-bottom: 2px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase
     }
 
     @keyframes fadeUp {
@@ -1327,7 +1532,7 @@
     <div class="sb" id="sb">
       <div class="sb-top">
         <button class="btn-new" onclick="newChat()">
-          <div class="ico">✏️</div><span>แชทใหม่</span>
+          <div class="ico">✦</div><span>แชทใหม่</span>
         </button>
         <div class="search-wrap">
           <span class="search-ico">🔍</span>
@@ -1349,6 +1554,8 @@
       <div class="user-menu" id="userMenu">
         <div class="menu-item" onclick="showChangePassword()">🔑 เปลี่ยนรหัสผ่าน</div>
         <div class="menu-item" onclick="showMemoryPanel()">🧠 จัดการ Memory</div>
+        <div class="menu-item" onclick="showFileLibrary()">📁 คลังไฟล์ส่วนตัว</div>
+        <div class="menu-item" onclick="showUsageStats()">📊 สถิติการใช้งาน</div>
         <div class="menu-divider"></div>
         <div class="menu-item danger" onclick="doLogout()">↩ ออกจากระบบ</div>
       </div>
@@ -1362,9 +1569,10 @@
           <div class="topbar-title" id="topTitle">Gemma AI</div>
           <div class="topbar-sub" id="topSub">Local AI · พร้อมใช้งาน</div>
         </div>
-        <div class="topbar-actions"><select class="model-selector" id="modelSelect" onchange="localStorage.setItem('gemma_model', this.value); currentModel = this.value;"></select>
+        <div class="topbar-actions"><select class="model-selector" id="modelSelect"
+            onchange="localStorage.setItem('gemma_model', this.value); currentModel = this.value;"></select>
           <button class="memory-btn" onclick="toggleMemoryView()">🧠 Memory</button>
-          <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+          <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">◐</button>
         </div>
       </div>
       <div class="msgs" id="msgs"></div>
@@ -1372,6 +1580,8 @@
         <div class="input-inner">
           <div class="memory-panel" id="memoryPanel"></div>
           <div class="toolbar">
+            <button class="tool-btn" id="libSearchBtn" onclick="toggleLibSearch()">📚 Search Library: Off</button>
+            <button class="tool-btn" id="webSearchBtn" onclick="toggleWebSearch()">🌐 Web Search: Off</button>
             <button class="tool-btn" onclick="document.getElementById('fileInput').click()">📎 แนบไฟล์</button>
             <input type="file" id="fileInput"
               accept=".pdf,.csv,.xml,.docx,.doc,.xlsx,.xls,.txt,.md,.json,.yaml,.jpg,.jpeg,.png,.gif,.webp"
@@ -1422,24 +1632,42 @@
     </div>
   </div>
 
+
   <script>
-    // ── State ──────────────────────────────────────────────────────────────────
-    
+    // --- State ---
     let currentModel = localStorage.getItem('gemma_model') || '';
-    
-    
+    let curSession = null, sessions = [], allSessions = [], busy = false;
+    let webSearchEnabled = false, libSearchEnabled = false;
+    let selFile = null, renameId = null, currentUser = null, isGuest = false;
+
+    const msgsEl = document.getElementById('msgs');
+    const inpEl = document.getElementById('inp');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // --- Theme ---
+    const THEME_KEY = 'gemma_theme';
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeBtn').textContent = t === 'dark' ? '◐' : '○';
+      localStorage.setItem(THEME_KEY, t);
+    }
+    function toggleTheme() {
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    }
+    applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+
+    // --- Models ---
     async function loadModels() {
       try {
         const r = await fetch('/api/models');
         const data = await r.json();
         const sel = document.getElementById('modelSelect');
         const savedModel = localStorage.getItem('gemma_model');
-        
+
         sel.innerHTML = data.models.map(m => {
           let desc = '';
           const sizeGB = m.size / (1024 * 1024 * 1024);
-          const name = m.name.toLowerCase();
-          
+          const name = (m.name || '').toLowerCase();
           if (sizeGB > 0) {
             if (sizeGB < 1.2) desc = ' [Ultra Light]';
             else if (sizeGB < 3.5) desc = ' [Fast]';
@@ -1450,40 +1678,77 @@
             if (name.includes('9b') || name.includes('7b')) desc = ' [Deep Thinking]';
             else if (name.includes('2b') || name.includes('tiny')) desc = ' [Fast]';
           }
-          
-          if (name.includes('think')) desc = ' [Deep Thinking]';
-          
           const modelName = typeof m === 'string' ? m : m.name;
-          return `<option value="${modelName}" ${modelName === (savedModel || data.current) ? 'selected' : ''}>${modelName}${desc}</option>`;
+          return '<option value="' + modelName + '" ' + (modelName === (savedModel || data.current) ? 'selected' : '') + '>' + modelName + desc + '</option>';
         }).join('');
-        
-        if (!savedModel) {
-            localStorage.setItem('gemma_model', data.current);
-            currentModel = data.current;
-        }
+        if (!savedModel) { localStorage.setItem('gemma_model', data.current); currentModel = data.current; }
       } catch (e) { console.error("Failed to load models", e); }
     }
 
-    let curSession = null, sessions = [], allSessions = [], busy = false;
-    let selFile = null, renameId = null, currentUser = null, isGuest = false;
-
-    const msgsEl = document.getElementById('msgs');
-    const inpEl = document.getElementById('inp');
-    const sendBtn = document.getElementById('sendBtn');
-
-    // ── Theme ──────────────────────────────────────────────────────────────────
-    const THEME_KEY = 'gemma_theme';
-    function applyTheme(t) {
-      document.documentElement.setAttribute('data-theme', t);
-      document.getElementById('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️';
-      localStorage.setItem(THEME_KEY, t);
+    // --- Search Handlers ---
+    function toggleWebSearch() {
+      webSearchEnabled = !webSearchEnabled;
+      const btn = document.getElementById('webSearchBtn');
+      btn.textContent = '🌐 Web Search: ' + (webSearchEnabled ? 'On' : 'Off');
+      btn.style.borderColor = webSearchEnabled ? 'var(--accent)' : 'var(--border)';
+      btn.style.color = webSearchEnabled ? 'var(--accent)' : 'var(--muted)';
     }
-    function toggleTheme() {
-      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-    }
-    applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
 
-    // ── Auth ───────────────────────────────────────────────────────────────────
+    function toggleLibSearch() {
+      if (isGuest) { alert('กรุณาเข้าสู่ระบบเพื่อใช้งานคลังไฟล์ส่วนตัว'); return; }
+      libSearchEnabled = !libSearchEnabled;
+      const btn = document.getElementById('libSearchBtn');
+      btn.textContent = '📚 Search Library: ' + (libSearchEnabled ? 'On' : 'Off');
+      btn.style.borderColor = libSearchEnabled ? 'var(--accent2)' : 'var(--border)';
+      btn.style.color = libSearchEnabled ? 'var(--accent2)' : 'var(--muted)';
+    }
+
+    async function showFileLibrary() {
+      closeUserMenu();
+      if (isGuest) { alert('กรุณาเข้าสู่ระบบเพื่อใช้งานคลังไฟล์ส่วนตัว'); return; }
+      document.getElementById('libModalBg').classList.add('show');
+      const list = document.getElementById('libList');
+      list.innerHTML = '<div style="padding:20px; text-align:center;">กำลังโหลด...</div>';
+      try {
+        const r = await fetch('/api/library');
+        const files = await r.json();
+        if (!files.length) {
+          list.innerHTML = '<div style="padding:40px; text-align:center; color:var(--muted);">ยังไม่มีไฟล์ในคลัง<br>อัปโหลดไฟล์ในแชทเพื่อบันทึกลงคลังอัตโนมัติ</div>';
+          return;
+        }
+        list.innerHTML = files.map(f => `
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px solid var(--border);">
+            <div style="font-size:24px;">${getFileIcon(f.file_type)}</div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:600; font-size:13px; overflow:hidden; text-overflow:ellipsis;">${f.filename}</div>
+              <div style="font-size:11px; color:var(--muted);">${f.file_type} · ${fmtDate(f.created_at)}</div>
+            </div>
+            <button class="ico-btn del" onclick="deleteLibFile('${f.file_hash}')" style="font-size:16px;">🗑</button>
+          </div>
+        `).join('');
+      } catch (e) { list.innerHTML = `<div style="color:var(--red); padding:20px;">เกิดข้อผิดพลาด: ${e.message}</div>`; }
+    }
+
+    async function deleteLibFile(hash) {
+      if (!confirm('ยืนยันการลบไฟล์นี้ออกจากคลัง? AI จะไม่สามารถจดจำไฟล์นี้ได้อีก')) return;
+      await fetch('/api/library/' + hash, { method: 'DELETE' });
+      showFileLibrary();
+    }
+
+
+    async function showUsageStats() {
+      closeUserMenu();
+      document.getElementById('usageModalBg').classList.add('show');
+      try {
+        const r = await fetch('/api/usage/me');
+        const d = await r.json();
+        document.getElementById('inputTokens').textContent = d.input_tokens.toLocaleString();
+        document.getElementById('outputTokens').textContent = d.output_tokens.toLocaleString();
+        document.getElementById('totalTokens').textContent = d.total_tokens.toLocaleString();
+      } catch (e) { alert('โหลดสถิติไม่สำเร็จ: ' + e.message); }
+    }
+
+    // --- Auth Functions ---
     function switchTab(tab) {
       document.querySelectorAll('.auth-tab').forEach((t, i) =>
         t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register')));
@@ -1538,12 +1803,10 @@
 
     function enterApp() {
       document.getElementById('authScreen').classList.add('hidden');
-      // อัปเดต user panel
       const name = currentUser?.display_name || 'ผู้เยี่ยมชม';
       document.getElementById('userDisplayName').textContent = name;
       document.getElementById('userRole').textContent = isGuest ? 'guest' : (currentUser?.role || 'user');
       document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
-      // ซ่อน user menu items ถ้าเป็น guest
       if (isGuest) {
         document.querySelectorAll('.menu-item:not(.danger)').forEach(e => e.style.display = 'none');
       }
@@ -1562,16 +1825,9 @@
       msgsEl.innerHTML = '';
     }
 
-    // ── User Menu ──────────────────────────────────────────────────────────────
-    function toggleUserMenu() {
-      document.getElementById('userMenu').classList.toggle('show');
-    }
-    function closeUserMenu() {
-      document.getElementById('userMenu').classList.remove('show');
-    }
-    document.addEventListener('click', e => {
-      if (!e.target.closest('#sbUser') && !e.target.closest('#userMenu')) closeUserMenu();
-    });
+    function toggleUserMenu() { document.getElementById('userMenu').classList.toggle('show'); }
+    function closeUserMenu() { document.getElementById('userMenu').classList.remove('show'); }
+    document.addEventListener('click', e => { if (!e.target.closest('#sbUser') && !e.target.closest('#userMenu')) closeUserMenu(); });
 
     async function doChangePw() {
       const op = document.getElementById('oldPw').value;
@@ -1586,58 +1842,19 @@
       if (d.ok) { closeModal('pwBg'); alert('เปลี่ยนรหัสผ่านสำเร็จ'); }
       else { document.getElementById('pwError').textContent = d.error; }
     }
-    function showChangePassword() {
-      closeUserMenu();
-      document.getElementById('pwBg').classList.add('show');
-    }
+    function showChangePassword() { closeUserMenu(); document.getElementById('pwBg').classList.add('show'); }
 
-    // ── Memory Panel ───────────────────────────────────────────────────────────
-    let memoryVisible = false;
-    async function toggleMemoryView() {
-      memoryVisible = !memoryVisible;
-      const panel = document.getElementById('memoryPanel');
-      if (!memoryVisible) { panel.classList.remove('show'); return; }
-      panel.classList.add('show');
-      panel.innerHTML = '<div style="color:var(--muted);font-size:12px">กำลังโหลด memory...</div>';
-      try {
-        const url = curSession ? `/api/memory?session_id=${curSession}` : '/api/memory';
-        const r = await fetch(url);
-        const data = await r.json();
-        if (!data.length) {
-          panel.innerHTML = '<div style="color:var(--muted);font-size:12px;text-align:center;padding:12px">ยังไม่มี memory</div>';
-          return;
-        }
-        panel.innerHTML = data.map(m => `
-      <div class="memory-item">
-        <strong>${m.type === 'summary' ? '📋 สรุปบทสนทนา' : '💡 ข้อมูลที่จำ'} · ${fmtDate(m.created_at)}</strong>
-        ${esc(m.content)}
-      </div>`).join('');
-      } catch (e) {
-        panel.innerHTML = `<div style="color:var(--red);font-size:12px">${e.message}</div>`;
-      }
-    }
-
-    function showMemoryPanel() {
-      closeUserMenu();
-      if (!memoryVisible) toggleMemoryView();
-    }
-
-    // ── Sessions ───────────────────────────────────────────────────────────────
+    // --- Message Management ---
     async function loadSessions() {
       try {
         const r = await fetch('/api/sessions?source=webchat');
-        allSessions = await r.json();
-        sessions = [...allSessions];
-        renderList(sessions);
+        allSessions = await r.json(); sessions = [...allSessions]; renderList(sessions);
       } catch (e) { console.error(e); }
     }
 
     function renderList(list) {
       const el = document.getElementById('chatList');
-      if (!list.length) {
-        el.innerHTML = '<div class="sb-empty">ยังไม่มีการสนทนา<br>กด "แชทใหม่" เพื่อเริ่ม</div>';
-        return;
-      }
+      if (!list.length) { el.innerHTML = '<div class="sb-empty">ยังไม่มีการสนทนา<br>กด "แชทใหม่" เพื่อเริ่ม</div>'; return; }
       el.innerHTML = list.map(s => {
         const title = s.title || genTitle(s.last_user_msg) || 'การสนทนาใหม่';
         const preview = (s.last_user_msg || '').slice(0, 40) || 'ยังไม่มีข้อความ';
@@ -1671,14 +1888,14 @@
     async function switchChat(id) {
       curSession = id; closeSb();
       document.querySelectorAll('.chat-item').forEach(e => e.classList.remove('active'));
-      document.getElementById(`ci-${id}`)?.classList.add('active');
+      document.getElementById('ci-' + id)?.classList.add('active');
       msgsEl.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted)">กำลังโหลด...</div>';
       try {
-        const r = await fetch(`/api/sessions/${id}`);
+        const r = await fetch('/api/sessions/' + id);
         const data = await r.json();
         const title = data.title || genTitle(data.messages?.find(m => m.role === 'user')?.content) || 'การสนทนา';
         document.getElementById('topTitle').textContent = title;
-        document.getElementById('topSub').textContent = `${data.messages?.length || 0} ข้อความ`;
+        document.getElementById('topSub').textContent = (data.messages?.length || 0) + ' ข้อความ';
         msgsEl.innerHTML = '';
         if (!data.messages?.length) { showWelcome(); return; }
         data.messages.forEach(m => addBubble(m.role === 'user' ? 'user' : 'bot', m.content, null, m.created_at));
@@ -1692,11 +1909,11 @@
 
     async function delChat(id) {
       if (!confirm('ลบการสนทนานี้?')) return;
-      await fetch(`/api/sessions/${id}`, { method: 'DELETE' });
+      await fetch('/api/sessions/' + id, { method: 'DELETE' });
       allSessions = allSessions.filter(s => s.id !== id);
       sessions = sessions.filter(s => s.id !== id);
       renderList(sessions);
-      if (curSession === id) sessions.length ? await switchChat(sessions[0].id) : newChat();
+      if (curSession === id) sessions.length ? switchChat(sessions[0].id) : newChat();
     }
 
     let searchT = null;
@@ -1704,7 +1921,7 @@
       clearTimeout(searchT);
       if (!v.trim()) { sessions = [...allSessions]; renderList(sessions); return; }
       searchT = setTimeout(async () => {
-        const r = await fetch(`/api/search?q=${encodeURIComponent(v)}`);
+        const r = await fetch('/api/search?q=' + encodeURIComponent(v));
         const d = await r.json();
         const ids = [...new Set(d.map(m => m.session_id))];
         sessions = allSessions.filter(s => ids.includes(s.id));
@@ -1721,7 +1938,7 @@
     async function doRename() {
       const title = document.getElementById('renameInp').value.trim();
       if (!title || !renameId) return;
-      await fetch(`/api/sessions/${renameId}/rename`, {
+      await fetch('/api/sessions/' + renameId + '/rename', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title })
       });
@@ -1729,44 +1946,29 @@
       if (curSession === renameId) document.getElementById('topTitle').textContent = title;
       renderList(sessions); closeModal('renameBg');
     }
-    document.getElementById('renameInp').addEventListener('keydown', e => {
-      if (e.key === 'Enter') doRename(); if (e.key === 'Escape') closeModal('renameBg');
-    });
 
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('show');
-    }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
     document.querySelectorAll('.modal-bg').forEach(bg => {
       bg.addEventListener('click', e => { if (e.target === e.currentTarget) bg.classList.remove('show'); });
     });
 
-    // ── Sidebar ────────────────────────────────────────────────────────────────
-    function toggleSb() {
-      document.getElementById('sb').classList.toggle('open');
-      document.getElementById('sbOverlay').classList.toggle('show');
-    }
-    function closeSb() {
-      document.getElementById('sb').classList.remove('open');
-      document.getElementById('sbOverlay').classList.remove('show');
-    }
+    // --- Sidebar ---
+    function toggleSb() { document.getElementById('sb').classList.toggle('open'); document.getElementById('sbOverlay').classList.toggle('show'); }
+    function closeSb() { document.getElementById('sb').classList.remove('open'); document.getElementById('sbOverlay').classList.remove('show'); }
 
-    // ── Welcome ────────────────────────────────────────────────────────────────
+    // --- Welcome ---
     function showWelcome() {
       const name = currentUser?.display_name || 'คุณ';
-      msgsEl.innerHTML = `<div class="welcome">
-    <div class="welcome-av">🤖</div>
-    <h2>สวัสดีครับ ${isGuest ? '' : name}!</h2>
-    <p>ผมคือ Gemma AI ขับเคลื่อนด้วย Local AI<br>พิมพ์ถามได้เลย หรือแนบไฟล์ให้ผมวิเคราะห์ครับ</p>
-    <div class="sugs">
-      <button class="sug" onclick="useSug(this)">อธิบาย Machine Learning ให้เข้าใจง่าย</button>
-      <button class="sug" onclick="useSug(this)">เขียน Python อ่านไฟล์ CSV</button>
-      <button class="sug" onclick="useSug(this)">แปลภาษาอังกฤษให้หน่อย</button>
-      <button class="sug" onclick="useSug(this)">ช่วยเขียน email อย่างเป็นทางการ</button>
-    </div>
-  </div>`;
+      msgsEl.innerHTML = '<div class="welcome"><div class="welcome-av">🤖</div><h2>สวัสดีครับ ' + (isGuest ? '' : name) + '!</h2>' +
+        '<p>ผมคือ Gemma AI ขับเคลื่อนด้วย Local AI<br>พิมพ์ถามได้เลย หรือแนบไฟล์ให้ผมวิเคราะห์ครับ</p>' +
+        '<div class="sugs">' +
+        '<button class="sug" onclick="useSug(this)">อธิบาย Machine Learning ให้เข้าใจง่าย</button>' +
+        '<button class="sug" onclick="useSug(this)">เขียน Python อ่านไฟล์ CSV</button>' +
+        '<button class="sug" onclick="useSug(this)">แปลภาษาอังกฤษให้หน่อย</button>' +
+        '<button class="sug" onclick="useSug(this)">ช่วยเขียน email อย่างเป็นทางการ</button></div></div>';
     }
 
-    // ── Render ─────────────────────────────────────────────────────────────────
+    // --- Render Helpers ---
     function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') }
     function fmtTime(iso) { if (!iso) return ''; return new Date(iso).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) }
     function fmtDate(iso) { if (!iso) return ''; return new Date(iso).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }
@@ -1779,7 +1981,7 @@
         if (m) {
           const lang = m[1] || 'text', code = m[2].trim(), ext = langExt(lang);
           const blk = document.createElement('div'); blk.className = 'code-block';
-          blk.innerHTML = `<div class="code-bar"><span class="code-lang">${lang}</span><div class="code-btns"><button class="code-btn" onclick="cpCode(this)">คัดลอก</button><button class="code-btn" onclick="dlCode(this,'${ext}')">⬇ ดาวน์โหลด</button></div></div><pre><code></code></pre>`;
+          blk.innerHTML = '<div class="code-bar"><span class="code-lang">' + lang + '</span><div class="code-btns"><button class="code-btn" onclick="cpCode(this)">คัดลอก</button><button class="code-btn" onclick="dlCode(this,\'' + ext + '\')">⬇ ดาวน์โหลด</button></div></div><pre><code></code></pre>';
           blk.querySelector('code').textContent = code; frag.appendChild(blk);
         } else if (p.trim()) {
           const sp = document.createElement('span'); sp.style.whiteSpace = 'pre-wrap'; sp.textContent = p; frag.appendChild(sp);
@@ -1796,7 +1998,7 @@
     function dlCode(btn, ext) {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([btn.closest('.code-block').querySelector('code').textContent], { type: 'text/plain' }));
-      a.download = `code_${Date.now()}.${ext}`; a.click();
+      a.download = 'code_' + Date.now() + '.' + ext; a.click();
     }
 
     function getFileBadgeClass(t) {
@@ -1813,52 +2015,111 @@
 
     function addBubble(role, text, fileMeta, time) {
       document.querySelector('.welcome')?.remove();
-      const row = document.createElement('div'); row.className = `msg-row ${role}`;
+      const row = document.createElement('div'); row.className = 'msg-row ' + role;
+
+      const inner = document.createElement('div'); inner.className = 'msg-inner';
+
+      // Avatar (only for bot)
       const av = document.createElement('div'); av.className = 'msg-av';
-      av.textContent = role === 'bot' ? '🤖' : (currentUser?.display_name || '👤').charAt(0).toUpperCase();
+      av.textContent = '✦';
+      inner.appendChild(av);
+
       const body = document.createElement('div'); body.className = 'msg-body';
+
+      // Label (only for bot)
+      const label = document.createElement('div'); label.className = 'msg-label';
+      label.innerHTML = '<span class="name">Gemma AI</span>';
+      if (time) { label.innerHTML += '<span class="msg-time">' + fmtTime(time) + '</span>'; }
+      body.appendChild(label);
+
+      // Bubble
       const bubble = document.createElement('div'); bubble.className = 'bubble';
 
       if (fileMeta) {
         const cls = getFileBadgeClass(fileMeta.type);
         const ico = getFileIcon(fileMeta.type);
-        const badge = document.createElement('div');
-        badge.className = `file-badge ${cls}`;
-        badge.innerHTML = `${ico} <strong>${esc(fileMeta.name)}</strong>`;
+        const badge = document.createElement('div'); badge.className = 'file-badge ' + cls;
+        badge.innerHTML = ico + ' <strong>' + esc(fileMeta.name) + '</strong>';
         bubble.appendChild(badge);
         if (fileMeta.preview) {
           const img = document.createElement('img');
-          img.style.cssText = 'max-width:260px;max-height:180px;border-radius:10px;display:block;margin-bottom:8px';
+          img.style.cssText = 'max-width:300px;border-radius:8px;display:block;margin-bottom:12px; border:1px solid var(--border)';
           img.src = fileMeta.preview; bubble.appendChild(img);
         }
       }
 
-      bubble.appendChild(renderMd(text));
-      const timeEl = document.createElement('div'); timeEl.className = 'msg-time';
-      timeEl.textContent = fmtTime(time) || '';
-      body.appendChild(bubble); if (time) body.appendChild(timeEl);
-      row.appendChild(av); row.appendChild(body); msgsEl.appendChild(row); scrollBot();
+      if (role === 'user') {
+        // Normal text for user
+        bubble.textContent = text;
+      } else {
+        // Markdown for bot
+        bubble.appendChild(renderMd(text));
+      }
+
+      body.appendChild(bubble);
+
+      // Time for user (below bubble)
+      if (role === 'user' && time) {
+        const timeEl = document.createElement('div'); timeEl.className = 'msg-time';
+        timeEl.textContent = fmtTime(time);
+        body.appendChild(timeEl);
+      }
+
+      inner.appendChild(body);
+      row.appendChild(inner);
+      msgsEl.appendChild(row);
+      scrollBot();
     }
 
     function addTypingMsg(msg = '') {
       document.querySelector('.welcome')?.remove();
       const row = document.createElement('div'); row.className = 'msg-row bot'; row.id = 'typing';
-      const av = document.createElement('div'); av.className = 'msg-av'; av.textContent = '🤖';
+
+      const inner = document.createElement('div'); inner.className = 'msg-inner';
+
+      const av = document.createElement('div'); av.className = 'msg-av';
+      av.textContent = '✦';
+      inner.appendChild(av);
+
       const body = document.createElement('div'); body.className = 'msg-body';
+
+      const label = document.createElement('div'); label.className = 'msg-label';
+      label.innerHTML = '<span class="name">Gemma AI</span>';
+      body.appendChild(label);
+
       const bubble = document.createElement('div'); bubble.className = 'bubble';
-      bubble.innerHTML = msg
-        ? `<div style="display:flex;align-items:center;gap:8px"><div class="spinner"></div><span style="font-size:12px;color:var(--muted)">${esc(msg)}</span></div>`
-        : '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
-      body.appendChild(bubble); row.appendChild(av); row.appendChild(body);
-      msgsEl.appendChild(row); scrollBot();
+      bubble.innerHTML = msg ? '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><div class="spinner"></div><span style="font-size:13px;color:var(--accent)">' + esc(msg) + '</span></div>' : '<div style="padding:4px 0;"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+
+      body.appendChild(bubble);
+      inner.appendChild(body);
+      row.appendChild(inner);
+      msgsEl.appendChild(row);
+      scrollBot();
     }
     function rmTyping() { document.getElementById('typing')?.remove() }
     function scrollBot() { msgsEl.scrollTo({ top: msgsEl.scrollHeight, behavior: 'smooth' }) }
 
-    // ── File ───────────────────────────────────────────────────────────────────
+    // --- Memory View ---
+    let memoryVisible = false;
+    async function toggleMemoryView() {
+      memoryVisible = !memoryVisible;
+      const panel = document.getElementById('memoryPanel');
+      if (!memoryVisible) { panel.classList.remove('show'); return; }
+      panel.classList.add('show');
+      panel.innerHTML = '<div style="color:var(--muted);font-size:12px">กำลังโหลด memory...</div>';
+      try {
+        const url = curSession ? '/api/memory?session_id=' + curSession : '/api/memory';
+        const r = await fetch(url);
+        const data = await r.json();
+        if (!data.length) { panel.innerHTML = '<div style="color:var(--muted);font-size:12px;text-align:center;padding:12px">ยังไม่มี memory</div>'; return; }
+        panel.innerHTML = data.map(m => '<div class="memory-item"><strong>' + (m.type === 'summary' ? '📋 สรุปบทสนทนา' : '💡 ข้อมูลที่จำ') + ' · ' + fmtDate(m.created_at) + '</strong>' + esc(m.content) + '</div>').join('');
+      } catch (e) { panel.innerHTML = '<div style="color:var(--red);font-size:12px">' + e.message + '</div>'; }
+    }
+    function showMemoryPanel() { closeUserMenu(); if (!memoryVisible) toggleMemoryView(); }
+
+    // --- File ---
     const IMG_EXTS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
     let filePreviewUrl = null;
-
     function onFile(input) {
       if (!input.files[0]) return;
       selFile = input.files[0];
@@ -1870,13 +2131,9 @@
       if (isImg && filePreviewUrl) { URL.revokeObjectURL(filePreviewUrl); filePreviewUrl = null }
       if (isImg) filePreviewUrl = URL.createObjectURL(selFile);
     }
-    function clearFile() {
-      selFile = null; document.getElementById('fileInput').value = '';
-      document.getElementById('fileChip').classList.remove('show');
-      if (filePreviewUrl) { URL.revokeObjectURL(filePreviewUrl); filePreviewUrl = null }
-    }
+    function clearFile() { selFile = null; document.getElementById('fileInput').value = ''; document.getElementById('fileChip').classList.remove('show'); if (filePreviewUrl) { URL.revokeObjectURL(filePreviewUrl); filePreviewUrl = null } }
 
-    // ── Send ───────────────────────────────────────────────────────────────────
+    // --- Send ---
     function resize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 160) + 'px' }
     function onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }
     function useSug(btn) { inpEl.value = btn.textContent; send() }
@@ -1887,42 +2144,167 @@
       busy = true; sendBtn.disabled = true;
       inpEl.value = ''; inpEl.style.height = 'auto';
       const now = new Date().toISOString();
-
       if (selFile) {
-        const file = selFile;
-        const ext = '.' + file.name.split('.').pop().toLowerCase();
-        const isImg = IMG_EXTS.includes(ext);
-        const preview = isImg && filePreviewUrl ? filePreviewUrl : null;
-        clearFile();
-        addBubble('user', text || (isImg ? `วิเคราะห์รูปภาพ ${file.name}` : `สรุปไฟล์ ${file.name}`),
-          { name: file.name, type: isImg ? 'รูปภาพ' : file.name.split('.').pop().toUpperCase(), preview }, now);
+        const file = selFile; const ext = '.' + file.name.split('.').pop().toLowerCase(); const isImg = IMG_EXTS.includes(ext); const preview = isImg && filePreviewUrl ? filePreviewUrl : null;
+        clearFile(); addBubble('user', text || (isImg ? 'วิเคราะห์รูปภาพ ' + file.name : 'สรุปไฟล์ ' + file.name), { name: file.name, type: isImg ? 'รูปภาพ' : file.name.split('.').pop().toUpperCase(), preview }, now);
         addTypingMsg(isImg ? 'กำลังวิเคราะห์รูปภาพ...' : 'กำลังอ่านและวิเคราะห์ไฟล์...');
         const form = new FormData(); form.append('file', file);
         try {
-          const r = await fetch(`/upload-file?session_id=${curSession}&user_prompt=${encodeURIComponent(text)}&model=${encodeURIComponent(document.getElementById('modelSelect').value)}`,
-            { method: 'POST', body: form });
-          const d = await r.json(); rmTyping(); addBubble('bot', d.reply, null, new Date().toISOString());
-        } catch (e) { rmTyping(); addBubble('bot', `❌ เกิดข้อผิดพลาด: ${e.message}`); }
+          const r = await fetch('/upload-file?session_id=' + curSession + '&user_prompt=' + encodeURIComponent(text) + '&model=' + encodeURIComponent(document.getElementById('modelSelect').value), { method: 'POST', body: form });
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          const ct = r.headers.get('content-type') || '';
+          if (ct.includes('text/event-stream')) {
+            // ── SSE streaming (เหมือน /chat) ──────────────────────────
+            rmTyping();
+            const row = document.createElement('div'); row.className = 'msg-row bot';
+            const bubble = document.createElement('div'); bubble.className = 'bubble';
+            row.appendChild(bubble); msgsEl.appendChild(row); scrollBot();
+            let accumulated = '';
+            const reader = r.body.getReader(); const decoder = new TextDecoder(); let buf = '';
+            while (true) {
+              const { done, value } = await reader.read(); if (done) break;
+              buf += decoder.decode(value, { stream: true });
+              const parts = buf.split('\n\n'); buf = parts.pop();
+              for (const part of parts) {
+                const line = part.trim(); if (!line.startsWith('data:')) continue;
+                try {
+                  const d = JSON.parse(line.slice(5).trim());
+                  if (d.error) { bubble.innerHTML = '<span style="color:var(--danger)">' + esc(d.error) + '</span>'; break; }
+                  if (d.status) {
+                    // Phase indicator — แสดงใน bubble ชั่วคราว ก่อนมี token จริง
+                    if (!accumulated) bubble.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><div class="spinner"></div><span style="font-size:13px;color:var(--accent)">' + esc(d.status) + '</span></div>';
+                  }
+                  if (d.token) { accumulated += d.token; bubble.innerHTML = renderMd(accumulated); scrollBot(); }
+                  if (d.done) { bubble.innerHTML = renderMd(d.full || accumulated); scrollBot(); }
+                } catch { }
+              }
+            }
+          } else {
+            // fallback JSON (ไม่ควรเกิด แต่ไว้รองรับ)
+            const d = await r.json(); rmTyping(); addBubble('bot', d.reply, null, new Date().toISOString());
+          }
+        } catch (e) { rmTyping(); addBubble('bot', '❌ เกิดข้อผิดพลาด: ' + e.message); }
       } else {
-        addBubble('user', text, null, now); addTypingMsg();
+        addBubble('user', text, null, now);
+        if (webSearchEnabled) addTypingMsg('กำลังค้นหาข้อมูลจากอินเทอร์เน็ต...');
+        else if (libSearchEnabled) addTypingMsg('กำลังค้นหาในคลังไฟล์ส่วนตัว...');
+        else addTypingMsg();
         try {
           const r = await fetch('/chat', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: curSession, message: text, model: document.getElementById('modelSelect').value })
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              session_id: curSession, message: text,
+              model: document.getElementById('modelSelect').value,
+              web_search: webSearchEnabled, library_search: libSearchEnabled
+            })
           });
-          const d = await r.json(); rmTyping(); addBubble('bot', d.reply, null, new Date().toISOString());
-        } catch { rmTyping(); addBubble('bot', '❌ ไม่สามารถเชื่อมต่อ server ได้'); }
-      }
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          const contentType = r.headers.get('content-type') || '';
 
-      await loadSessions();
-      document.querySelectorAll('.chat-item').forEach(e => e.classList.remove('active'));
-      document.getElementById(`ci-${curSession}`)?.classList.add('active');
-      busy = false; sendBtn.disabled = false; inpEl.focus();
+          // ── SSE streaming path ─────────────────────────────────────────
+          if (contentType.includes('text/event-stream')) {
+            rmTyping();
+            const row = document.createElement('div'); row.className = 'msg-row bot';
+            const bubble = document.createElement('div'); bubble.className = 'bubble';
+            row.appendChild(bubble);
+            msgsEl.appendChild(row);
+            scrollBot();
+
+            let accumulated = '';
+            const reader = r.body.getReader();
+            const decoder = new TextDecoder();
+            let buf = '';
+
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              buf += decoder.decode(value, { stream: true });
+              const parts = buf.split('\n\n');
+              buf = parts.pop(); // เก็บส่วนที่ยังไม่ครบ
+              for (const part of parts) {
+                const line = part.trim();
+                if (!line.startsWith('data:')) continue;
+                try {
+                  const d = JSON.parse(line.slice(5).trim());
+                  if (d.error) {
+                    bubble.textContent = d.error; break;
+                  }
+                  if (d.token) {
+                    accumulated += d.token;
+                    // re-render markdown ทุก chunk
+                    bubble.innerHTML = '';
+                    bubble.appendChild(renderMd(accumulated));
+                    scrollBot();
+                  }
+                  if (d.done) {
+                    // render ครั้งสุดท้ายด้วยข้อความเต็ม (ป้องกัน diff ตก)
+                    bubble.innerHTML = '';
+                    bubble.appendChild(renderMd(d.full || accumulated));
+                    scrollBot();
+                  }
+                } catch { }
+              }
+            }
+
+            // ── Fallback: JSON path (backward-compat) ─────────────────────
+          } else {
+            const d = await r.json();
+            rmTyping();
+            addBubble('bot', d.reply, null, new Date().toISOString());
+          }
+        } catch (e) { rmTyping(); addBubble('bot', '❌ ไม่สามารถเชื่อมต่อ server ได้: ' + e.message); }
+      }
+      loadSessions(); busy = false; sendBtn.disabled = false; inpEl.focus();
     }
 
-    // ── Init ───────────────────────────────────────────────────────────────────
+    // --- Init ---
     checkSession();
   </script>
+
+
+  <!-- File Library Modal -->
+  <div class="modal-bg" id="libModalBg">
+    <div class="modal" style="width: 600px; max-width: 90vw;">
+      <h3>📁 คลังไฟล์ส่วนตัว</h3>
+      <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">ไฟล์ที่เคยอัปโหลดจะถูกเก็บไว้ที่นี่เพื่อให้ AI
+        จดจำได้ข้ามแชท</p>
+      <div id="libList" style="max-height: 400px; overflow-y: auto; margin-bottom: 16px;">
+        <!-- Files will be listed here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('libModalBg')">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Usage Stats Modal -->
+  <div class="modal-bg" id="usageModalBg">
+    <div class="modal">
+      <h3>📊 สถิติการใช้งาน Token</h3>
+      <div id="usageContent" style="margin: 16px 0;">
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
+          <span>Token ขาเข้า (Prompt):</span>
+          <strong id="inputTokens">0</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
+          <span>Token ขาออก (Response):</span>
+          <strong id="outputTokens">0</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:12px 0; font-size:1.1em; color:var(--accent);">
+          <span>รวมทั้งหมด:</span>
+          <strong id="totalTokens">0</strong>
+        </div>
+        <div style="font-size:12px; color:var(--muted); margin-top:8px;">* สถิตินี้คำนวณจากประวัติการแชททั้งหมดของคุณ
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('usageModalBg')">ปิด</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>
